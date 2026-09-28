@@ -1017,7 +1017,7 @@ def test_legacy_adapter_uses_private_core_and_reports_adapter_provenance(
     monkeypatch.setenv("API2_APP_CREDENTIAL", "dummy-app:dummy-key")
 
     assert Path(adapter.core.__file__).resolve() == Path(
-        "tools/api3_anthropic_runner_v2/generation_runner.py"
+        "tools/api3_anthropic_runner_v2/generation_core.py"
     ).resolve()
     report = adapter.core.check_runner(
         briefs_path=adapter.FROZEN_CORE_ROOT / "briefs.json",

@@ -653,14 +653,17 @@ def load_run_config(path: str | Path) -> FrozenTwoStageRunConfig:
     core_root = _resolve_path(
         config_dir, value["core_root"], field_name="core_root"
     )
+    from benchmark.scene_generation.frozen_two_stage.compatibility.loader import core_resource_root
+    resource_root = (core_resource_root(core_root)
+                     if (core_root / "generation_runner.py").is_file() else core_root)
     briefs_path = _resolve_path(
         config_dir,
-        value.get("briefs_path", str(core_root / "briefs.json")),
+        value.get("briefs_path", str(resource_root / "briefs.json")),
         field_name="briefs_path",
     )
     models_path = _resolve_path(
         config_dir,
-        value.get("models_path", str(core_root / "models.pod.json")),
+        value.get("models_path", str(resource_root / "models.pod.json")),
         field_name="models_path",
     )
     if not core_root.is_dir():

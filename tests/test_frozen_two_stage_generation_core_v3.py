@@ -8,10 +8,10 @@ import pytest
 from tools.api3_anthropic_runner_v2.generation_runner import run_case as run_case_v2
 from tools.api3_anthropic_runner_v3.generation_runner import (
     ModelConfig as ModelConfigV3,
+    StrictJSONError,
     load_model_json_emission,
     run_case as run_case_v3,
 )
-from tools.api3_anthropic_runner_v3.strict_json import StrictJSONError
 
 from tests.test_frozen_two_stage_generation_core import (
     _Context,

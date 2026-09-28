@@ -23,7 +23,7 @@ ADDITIVE_REGISTRY_MANIFEST_SCHEMA_VERSION = (
 )
 MULTI_ROOM_FRAGMENT_SCHEMA_VERSION = "generation_multi_room_campaign_fragment_v1"
 MULTI_ROOM_WORKFLOW_PROFILE_ID = (
-    "frozen-two-stage-multi-room-with-architecture-v1"
+    "shared-two-stage-multi-room-with-architecture-v1"
 )
 MULTI_ROOM_GENERATION_MODE = "multi_room_with_architecture_v1"
 DEFAULT_ADDITIVE_REGISTRY_RELATIVE = Path(

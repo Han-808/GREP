@@ -13,7 +13,7 @@ from benchmark.scene_generation.multi_room.floor_plan import (
 
 
 GENERATION_MODE = "multi_room_with_architecture_v1"
-WORKFLOW_PROFILE_ID = "frozen-two-stage-multi-room-with-architecture-v1"
+WORKFLOW_PROFILE_ID = "shared-two-stage-multi-room-with-architecture-v1"
 
 
 __all__ = [

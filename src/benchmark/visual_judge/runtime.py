@@ -4,7 +4,7 @@ Implementation lives in the focused interfaces, adapters, and orchestration
 packages. Existing callers may keep importing this module unchanged.
 """
 
-from benchmark.visual_judge.adapters.legacy_judge import (
+from benchmark.visual_judge.adapters.provider_judge import (
     ControlledVLMJudge,
     EvidenceControlUnresolvedError,
     build_controlled_vlm_judge,

@@ -5,7 +5,7 @@ from dataclasses import replace
 import math
 from typing import Any, Callable, Mapping, Protocol
 
-from benchmark.visual_judge.adapters.legacy_camera import (
+from benchmark.visual_judge.adapters.provider_camera import (
     camera_selection_result_from_value,
 )
 from benchmark.visual_judge.camera_dsl import (

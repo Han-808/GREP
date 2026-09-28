@@ -34,8 +34,8 @@ def test_evaluator_core_matches_its_declared_content_manifest():
     # non-rectangular baseline, so landing a new evaluator re-anchors this value.
     result = verify_nonrect_core(ROOT)
     assert result == {
-        "content_tree_sha256": "a51b30819143b2f957e192f59697cec167e1205d83be750b918f9e8da403ecd3",
-        "verified_file_count": 183,
+        "content_tree_sha256": "582a82346ea1065cb0b5095c93b001bbbd5d52ad534341e646f14e7890d795cd",
+        "verified_file_count": 187,
     }
 
 
@@ -56,7 +56,7 @@ def test_current_mapping_and_multi_room_provenance_are_not_promoted():
 
 def test_nonrect_selector_checks_core_and_retains_sealed_release_requirement():
     result = resolve_release(ROOT, "non_rectangular_multi_room")
-    assert result["core_verification"]["verified_file_count"] == 183
+    assert result["core_verification"]["verified_file_count"] == 187
     sealed = ROOT / "Support/artifacts/releases/complicated_eval_combined142_v1/run_combined.py"
     assert result["execution_available"] == sealed.is_file()
     if not sealed.is_file():

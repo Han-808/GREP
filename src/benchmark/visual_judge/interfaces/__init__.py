@@ -67,7 +67,7 @@ __all__ = [
 
 def __getattr__(name: str):
     if name == "ExistingJudgeAdapter":
-        from benchmark.visual_judge.adapters.legacy_judge import (
+        from benchmark.visual_judge.adapters.provider_judge import (
             ExistingJudgeAdapter,
         )
 
@@ -80,7 +80,7 @@ def __getattr__(name: str):
         "build_camera_selector",
         "camera_selection_result_from_value",
     }:
-        from benchmark.visual_judge.adapters import legacy_camera
+        from benchmark.visual_judge.adapters import provider_camera as legacy_camera
 
         value = getattr(legacy_camera, name)
     else:

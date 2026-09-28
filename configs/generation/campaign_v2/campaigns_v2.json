@@ -3,7 +3,7 @@
   "campaigns": [
     {
       "campaign_id": "api2-kimi-k3-scene10-v2",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-kimi-k3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -24,7 +24,7 @@
     },
     {
       "campaign_id": "api2-glm53-scene10-v2",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-glm-5-3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -45,7 +45,7 @@
     },
     {
       "campaign_id": "api3-opus48-high-scene10-v2",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api3-claude-opus-4-8-high",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -66,7 +66,7 @@
     },
     {
       "campaign_id": "tokenhub-hy4-preview-scene10-retry5-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "tokenhub-hy4-preview-retry5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -87,7 +87,7 @@
     },
     {
       "campaign_id": "api2-gpt6-astra-xhigh-scene10-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-gpt-6-astra-xhigh",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -108,7 +108,7 @@
     },
     {
       "campaign_id": "api2-kimi-k3-plus10-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-kimi-k3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -129,7 +129,7 @@
     },
     {
       "campaign_id": "api2-glm53-plus10-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-glm-5-3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -150,7 +150,7 @@
     },
     {
       "campaign_id": "api2-gpt56sol-plus10-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-gpt-5-6-sol",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -171,7 +171,7 @@
     },
     {
       "campaign_id": "api2-gpt6-astra-high-plus10-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-gpt-6-astra-high",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -192,7 +192,7 @@
     },
     {
       "campaign_id": "api3-sonnet5-plus10-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api3-claude-sonnet-5-retry3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -213,7 +213,7 @@
     },
     {
       "campaign_id": "api3-opus5-plus10-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api3-claude-opus-5-retry3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -234,7 +234,7 @@
     },
     {
       "campaign_id": "api3-fable5-plus10-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api3-claude-fable-5-retry3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -255,7 +255,7 @@
     },
     {
       "campaign_id": "tokenhub-hy4-preview-plus10-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "tokenhub-hy4-preview-retry3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -276,7 +276,7 @@
     },
     {
       "campaign_id": "api2-kimi-k3-plus10-t1800-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-kimi-k3-t1800",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -297,7 +297,7 @@
     },
     {
       "campaign_id": "api2-glm53-plus10-t1800-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-glm-5-3-t1800",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -318,7 +318,7 @@
     },
     {
       "campaign_id": "api2-gpt56sol-plus10-rerun-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-gpt-5-6-sol",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -339,7 +339,7 @@
     },
     {
       "campaign_id": "api2-kimi-k3-plus10-high-gap-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-kimi-k3-high",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -351,7 +351,7 @@
     },
     {
       "campaign_id": "api2-glm53-plus10-high-gap-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api2-glm-5-3-high",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -364,7 +364,7 @@
     },
     {
       "campaign_id": "api3-opus5-plus10-gap-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "model_profile_id": "api3-claude-opus-5-retry3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v2",
@@ -378,7 +378,7 @@
     },
     {
       "campaign_id": "api3-sonnet5-plus10-gap-v1",
-      "workflow_profile_id": "frozen-two-stage-generation-v3",
+      "workflow_profile_id": "shared-two-stage-fenced-json-v1",
       "model_profile_id": "api3-claude-sonnet-5-retry3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v3",
@@ -390,7 +390,7 @@
     },
     {
       "campaign_id": "api2-kimi-k3-plus10-high-gap-v3",
-      "workflow_profile_id": "frozen-two-stage-generation-v3",
+      "workflow_profile_id": "shared-two-stage-fenced-json-v1",
       "model_profile_id": "api2-kimi-k3-high",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v3",
@@ -402,7 +402,7 @@
     },
     {
       "campaign_id": "api2-glm53-plus10-high-gap-v3",
-      "workflow_profile_id": "frozen-two-stage-generation-v3",
+      "workflow_profile_id": "shared-two-stage-fenced-json-v1",
       "model_profile_id": "api2-glm-5-3-high",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "brief_set_id": "hy34-paired-briefs-v3",

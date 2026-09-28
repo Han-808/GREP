@@ -2,18 +2,18 @@
   "schema_version": "generation_campaign_contract_registry_v2",
   "workflows": [
     {
-      "workflow_profile_id": "frozen-two-stage-generation-v2",
+      "workflow_profile_id": "shared-two-stage-strict-json-v1",
       "core_bundle_id": "api3-anthropic-runner-core-v2",
       "runner_version": "2.0.0",
-      "runner_source_sha256": "c5193be2915a4ea7622f44ff1f913aff356539b2e21934a9953280417c2091af",
+      "runner_source_sha256": "c9288399aec9e016c960ced6253edb9ac9c060e20ca48a6bec53d91dd3651e94",
       "stage_a_prompt_sha256": "546d76f6a76e2530f3c18c4b6d85a1bfa094a113352585799c650589664a7754",
       "stage_c_prompt_sha256": "d4a055b01cdbdb3f2548d440bc3bcbdb1aa86c65a76972d32a1d545fc23f4b56"
     },
     {
-      "workflow_profile_id": "frozen-two-stage-generation-v3",
+      "workflow_profile_id": "shared-two-stage-fenced-json-v1",
       "core_bundle_id": "api3-anthropic-runner-core-v3",
       "runner_version": "2.0.0",
-      "runner_source_sha256": "f0439d91652775d30816b6479f7a9b46dc4126c7f951fe226c160de8f2b0de3a",
+      "runner_source_sha256": "2ab1f409218f71bce4e867db8f0b8701a8ca9c5d2489c75a22d5456f5e992c15",
       "stage_a_prompt_sha256": "546d76f6a76e2530f3c18c4b6d85a1bfa094a113352585799c650589664a7754",
       "stage_c_prompt_sha256": "d4a055b01cdbdb3f2548d440bc3bcbdb1aa86c65a76972d32a1d545fc23f4b56"
     }

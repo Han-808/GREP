@@ -383,6 +383,18 @@ class TrustInventory:
         }
         return hashlib.sha256(_canonical_json_bytes(payload)).hexdigest()
 
+    def _shared_core_dependencies(self, core_bundle: TrustedBundle) -> tuple[TrustedBundle, ...]:
+        # Check the shim bytes before reading the declarative dependency.
+        self._verify_bundle(core_bundle)
+        from benchmark.scene_generation.frozen_two_stage.compatibility.loader import core_resource_root
+        shared = core_resource_root(core_bundle.root)
+        if shared == core_bundle.root:
+            return ()
+        bundle = self._bundle_for_root(shared, purpose="shared_core_root")
+        if bundle.role != "frozen_generation_core":
+            raise TrustError("shared core is not a registered generation core")
+        return (bundle,)
+
     def verify_run_inputs(
         self,
         *,
@@ -429,6 +441,7 @@ class TrustInventory:
             bundle.bundle_id: bundle
             for bundle in (
                 core_bundle,
+                *self._shared_core_dependencies(core_bundle),
                 models_bundle,
                 briefs_bundle,
                 retrieval_runtime_bundle,
@@ -508,6 +521,7 @@ class TrustInventory:
             bundle.bundle_id: bundle
             for bundle in (
                 core_bundle,
+                *self._shared_core_dependencies(core_bundle),
                 campaign_runtime_bundle,
                 campaign_profile_bundle,
                 retrieval_runtime_bundle,
@@ -520,6 +534,7 @@ class TrustInventory:
             "schema_version": "generation_campaign_trust_report_v1",
             "trust_manifest_sha256": self.manifest_sha256,
             "core_bundle": core_bundle.to_public_dict(),
+            "shared_core_bundles": [b.to_public_dict() for b in self._shared_core_dependencies(core_bundle)],
             "campaign_runtime_bundle": campaign_runtime_bundle.to_public_dict(),
             "campaign_profile_bundle": campaign_profile_bundle.to_public_dict(),
             "campaign_profile_file": {

@@ -76,6 +76,37 @@ class FrozenCoreRuntimeInputs:
     retriever: Any
 
 
+def core_resource_root(core_root: str | Path) -> Path:
+    """Resolve a declarative shared-core entrypoint without executing Python."""
+    root = Path(core_root).expanduser().resolve()
+    runner = root / "generation_runner.py"
+    tree = ast.parse(runner.read_bytes(), filename=str(runner))
+    declarations = [node.value for node in tree.body if isinstance(node, ast.Assign)
+                    and any(isinstance(t, ast.Name) and t.id == "SHARED_CORE_ROOT"
+                            for t in node.targets)]
+    if not declarations:
+        return root
+    if len(declarations) != 1 or not isinstance(declarations[0], ast.Constant):
+        raise ValueError("Shared core root must be one literal path")
+    value = declarations[0].value
+    if not isinstance(value, str) or value not in {".", "../api3_anthropic_runner_v2"}:
+        raise ValueError("Unsupported shared core location")
+    target = (root / value).resolve()
+    if target.parent != root.parent or not (target / "generation_core.py").is_file():
+        raise ValueError("Shared generation implementation is unavailable")
+    return target
+
+
+def core_implementation_path(core_root: str | Path) -> Path:
+    root = Path(core_root).expanduser().resolve()
+    target = core_resource_root(root)
+    tree = ast.parse((root / "generation_runner.py").read_bytes())
+    shared = any(isinstance(node, ast.Assign) and any(
+        isinstance(t, ast.Name) and t.id == "SHARED_CORE_ROOT" for t in node.targets)
+        for node in tree.body)
+    return target / ("generation_core.py" if shared else "generation_runner.py")
+
+
 def load_frozen_core(core_root: str | Path) -> ModuleType:
     """Load one exact frozen core as an isolated synthetic package."""
 
@@ -88,9 +119,11 @@ def load_frozen_core(core_root: str | Path) -> ModuleType:
             f"{root}"
         )
     identity_hash = hashlib.sha256(str(root).encode("utf-8"))
-    for source_path in sorted(root.glob("*.py")):
+    resources = core_resource_root(root)
+    source_paths = set(root.glob("*.py")) | set(resources.glob("*.py"))
+    for source_path in sorted(source_paths):
         identity_hash.update(b"\0")
-        identity_hash.update(source_path.name.encode("utf-8"))
+        identity_hash.update(str(source_path).encode("utf-8"))
         identity_hash.update(b"\0")
         identity_hash.update(source_path.read_bytes())
     identity = identity_hash.hexdigest()[:24]
@@ -142,7 +175,7 @@ def inspect_core_metadata(core_root: str | Path) -> StaticCoreMetadata:
             "frozen core must contain __init__.py and generation_runner.py: "
             f"{root}"
         )
-    source = runner_path.read_bytes()
+    source = core_implementation_path(root).read_bytes()
     try:
         tree = ast.parse(source, filename=str(runner_path))
     except (SyntaxError, ValueError) as exc:
@@ -192,7 +225,7 @@ def inspect_core_metadata(core_root: str | Path) -> StaticCoreMetadata:
     return StaticCoreMetadata(
         root=root,
         runner_path=runner_path,
-        runner_sha256=hashlib.sha256(source).hexdigest(),
+        runner_sha256=hashlib.sha256(runner_path.read_bytes()).hexdigest(),
         runner_version=runner_versions[0],
     )
 

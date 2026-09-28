@@ -8,7 +8,7 @@ from typing import Any
 from benchmark.visual_judge.acquisition_state import (
     CameraAcquisitionState,
 )
-from benchmark.visual_judge.adapters.legacy_camera import (
+from benchmark.visual_judge.adapters.provider_camera import (
     HybridCameraSelector,
     build_camera_selector,
     camera_selection_result_from_value,

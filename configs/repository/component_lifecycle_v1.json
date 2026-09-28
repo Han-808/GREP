@@ -26,14 +26,15 @@
       "state": "active",
       "owner": "scene-generation",
       "replacement": null,
-      "reason": "Frozen two-stage generation core used by active API2/API3 routes. The retriever_runtime.py, run_retriever.sh, retriever_runtime.pod.json, and retriever_golden_v1.json interfaces remain exact frozen v1 replay surfaces; current generation uses the separately trusted shared v2 runtime directly.",
+      "reason": "Single maintained two-stage generation implementation in generation_core.py with explicit strict/fenced JSON policies. The historical folder name and frozen retrieval v1 surfaces remain for compatibility; current source identity is shared_two_stage_core_v1.",
       "tracked_policy": "all_tracked",
       "entrypoints": [
         "tools/api3_anthropic_runner_v2/generation_runner.py",
         "tools/api3_anthropic_runner_v2/run_generation.sh"
       ],
       "sources": [
-        "tools/api3_anthropic_runner_v2/contracts.py",
+        "tools/api3_anthropic_runner_v2/generation_core.py",
+        "tools/api3_anthropic_runner_v2/_core_loader.py",
         "tools/api3_anthropic_runner_v2/retriever_runtime.py"
       ],
       "dependencies": [
@@ -45,22 +46,20 @@
     {
       "component_id": "api3_anthropic_runner_v3",
       "root": "tools/api3_anthropic_runner_v3",
-      "state": "active",
+      "state": "compatibility",
       "owner": "scene-generation",
-      "replacement": null,
-      "reason": "Frozen two-stage generation core, identical to api3_anthropic_runner_v2 except that generation_runner.py tolerates exactly one whole-response JSON code fence around a stage emission. v2 stays byte-identical because it generated the published scene cohort; v3 exists so campaigns that need the wider parse can select it by core_bundle_id without disturbing that lineage.",
+      "replacement": "api3_anthropic_runner_v2",
+      "reason": "Thin fenced-JSON entrypoint loading the shared two-stage implementation in an isolated namespace; duplicate helpers, prompts, schemas and launchers were removed under the approved consolidation.",
       "tracked_policy": "all_tracked",
       "entrypoints": [
         "tools/api3_anthropic_runner_v3/generation_runner.py",
         "tools/api3_anthropic_runner_v3/run_generation.sh"
       ],
       "sources": [
-        "tools/api3_anthropic_runner_v3/contracts.py",
-        "tools/api3_anthropic_runner_v3/retriever_runtime.py"
+        "tools/api3_anthropic_runner_v3/generation_runner.py"
       ],
       "dependencies": [
-        "generation_retrieval_runtime_v2",
-        "generation_retrieval_profiles_v2"
+        "api3_anthropic_runner_v2"
       ],
       "quarantine_evidence": []
     },
@@ -1342,6 +1341,15 @@
       "owner": "scene-generation-tests",
       "reason": "SHA-pinned non-executable historical v1 contract fixture.",
       "content_sha256": "71fa0acb13dac5a854ee8c7eb60ccf20cf3dc9ee34247ea96ad3036d1251ad92",
+      "git_mode": "100644"
+    },
+    {
+      "artifact_id": "pre_consolidation_source_lineage_v1",
+      "path": "Support/legacy/frozen_replay/two_stage_pre_consolidation/source_lineage.json",
+      "state": "frozen_replay",
+      "owner": "repository",
+      "reason": "Original two-stage bundle hashes/contracts and evaluator core inventory before the user-approved implementation consolidation; exact source remains in the recorded Git commit.",
+      "content_sha256": "a6a304a4d25269879c081481186854ef1ffa500aee062dfbd6c9ef157984e3e0",
       "git_mode": "100644"
     }
   ]

@@ -14,6 +14,6 @@ export MKL_NUM_THREADS=1
 
 exec "$REPO_ROOT/.venv/bin/python" \
   "$RUNNER_ROOT/generation_runner.py" \
-  --briefs "$RUNNER_ROOT/briefs.json" \
-  --models "$RUNNER_ROOT/models.pod.json" \
+  --briefs "$RUNNER_ROOT/../api3_anthropic_runner_v2/briefs.json" \
+  --models "$RUNNER_ROOT/../api3_anthropic_runner_v2/models.pod.json" \
   "$@"

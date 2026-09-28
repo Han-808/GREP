@@ -237,7 +237,7 @@ def project_legacy_v1(path: str | Path) -> LegacyV1Projection:
             retry_delay_seconds=model.retry_delay_seconds,
         ),
         preflight_contract_id=preflight_contract_id,
-        workflow_profile_id="frozen-two-stage-generation-v2",
+        workflow_profile_id="shared-two-stage-strict-json-v1",
         retrieval_profile_id=retrieval_profile_id,
         brief_set_id=brief_set_id,
         execution_policy_id=execution_policy_id,

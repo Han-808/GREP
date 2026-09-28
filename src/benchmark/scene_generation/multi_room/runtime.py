@@ -265,7 +265,7 @@ def _finalize_room(
     result = {
         "schema_version": artifact.room_result_schema_version,
         "campaign_id": campaign_id,
-        "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+        "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
         "generation_mode": "multi_room_with_architecture_v1",
         "layout_id": room_brief["layout_id"],
         "floor_plan_sha256": room_brief["floor_plan_sha256"],

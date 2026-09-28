@@ -62,7 +62,7 @@ DEFAULT_GENERIC_VALIDITY_CONFIG = {
 
 GENERIC_VALIDITY_NOTES = [
     "generic_validity_v0 uses canonical OBB proxies for navigability and accessibility.",
-    "Collision uses collision_p0b_v3 and remains object-object only.",
+    "Collision uses collision_p0b_v4 and remains object-object only.",
     "OOB uses oob_p0b_v2 with exact OBB-vs-six-room-plane evidence and conservative VLM adjudication; the floor "
     "plane uses a separate semantic floor_contact_tolerance_m so ordinary shallow floor sink is not routed, and "
     "raw per-plane penetration is preserved in plane_penetration_m.",

@@ -12,7 +12,7 @@ from benchmark.rendering.camera_pose import (
     normalize_camera_candidate_policy,
     resolve_camera_pose_mode,
 )
-from benchmark.visual_judge.adapters.legacy_camera import (
+from benchmark.visual_judge.adapters.provider_camera import (
     camera_selection_result_from_value,
 )
 from benchmark.visual_judge.camera_dsl import (

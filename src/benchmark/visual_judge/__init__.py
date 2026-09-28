@@ -29,7 +29,7 @@ from benchmark.visual_judge.adapters.deterministic_camera import (
     DeterministicLocalCameraSelector,
     TrustedTechnicalCameraCandidateBankBuilder,
 )
-from benchmark.visual_judge.adapters.legacy_renderer import (
+from benchmark.visual_judge.adapters.provider_renderer import (
     CameraCandidatePreviewRenderer,
     CameraViewEvidenceRenderer,
 )

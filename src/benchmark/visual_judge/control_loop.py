@@ -4,7 +4,7 @@ New code should import stable contracts from interfaces, compatibility
 adapters from adapters, and orchestration from orchestration.
 """
 
-from benchmark.visual_judge.adapters.legacy_renderer import (
+from benchmark.visual_judge.adapters.provider_renderer import (
     ExistingEvidenceRendererAdapter,
 )
 from benchmark.visual_judge.interfaces.evidence import (

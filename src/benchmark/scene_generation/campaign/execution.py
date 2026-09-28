@@ -34,6 +34,7 @@ from benchmark.scene_generation.campaign.runtime import (
     build_provider_route,
 )
 from benchmark.scene_generation.frozen_two_stage.compatibility.loader import (
+    core_resource_root,
     inspect_brief_ids,
     inspect_core_metadata,
     load_frozen_core,
@@ -268,16 +269,17 @@ def prepare_campaign(
         retrieval_runtime_root=Path(build_runtime.__code__.co_filename).resolve().parent,
         retrieval_catalog_path=catalog_path,
     )
-    briefs_path = core_root / "briefs.json"
+    resources = core_resource_root(core_root)
+    briefs_path = resources / "briefs.json"
     models_public_path = profiles / "model_profiles_v2.json"
     static_core = inspect_core_metadata(core_root)
     if static_core.runner_version != workflow.runner_version:
         raise ValueError("frozen core runner version differs from workflow contract")
     if static_core.runner_sha256 != workflow.runner_source_sha256:
         raise ValueError("frozen core runner hash differs from workflow contract")
-    if _sha256(core_root / "stage_a_prompt.txt") != workflow.stage_a_prompt_sha256:
+    if _sha256(resources / "stage_a_prompt.txt") != workflow.stage_a_prompt_sha256:
         raise ValueError("Stage A prompt hash differs from workflow contract")
-    if _sha256(core_root / "stage_c_prompt.txt") != workflow.stage_c_prompt_sha256:
+    if _sha256(resources / "stage_c_prompt.txt") != workflow.stage_c_prompt_sha256:
         raise ValueError("Stage C prompt hash differs from workflow contract")
     if _sha256(briefs_path) != brief_set.content_sha256:
         raise ValueError("brief content hash differs from brief-set contract")

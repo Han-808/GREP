@@ -1,13 +1,13 @@
 {
   "schema_version": "generation_multi_room_campaign_fragment_v1",
   "workflow": {
-    "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+    "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
     "generation_mode": "multi_room_with_architecture_v1",
     "core_bundle_id": "api3-anthropic-runner-core-v2",
     "core_runner_version": "2.0.0",
-    "core_runner_source_sha256": "c5193be2915a4ea7622f44ff1f913aff356539b2e21934a9953280417c2091af",
+    "core_runner_source_sha256": "c9288399aec9e016c960ced6253edb9ac9c060e20ca48a6bec53d91dd3651e94",
     "compatibility_runtime_version": "1.0.7",
-    "compatibility_source_manifest_sha256": "8830196afbf827a676eaa6a167565b3cec06ce51694c1cbc5807fec2d96d6264",
+    "compatibility_source_manifest_sha256": "e19b2e7d851017176887e825af44c036147adfd9e6583b81f1070876404ee248",
     "stage_a_prompt_sha256": "9fb6008cb0398abf012e2eb274cc4ffbdc5d4f6a32f502b74664e9ecdac7f7f6",
     "stage_c_prompt_sha256": "d5bf9841308a11646b2d5d061897f7ebe7a7cb590ecc24ceb7264b19987ced9f",
     "floor_plan_schema_sha256": "67fd2f9bcc971f7151ad956b70e5b9c10f4dc520061c80825e404d37e8ab7167",
@@ -30,7 +30,7 @@
   "campaigns": [
     {
       "campaign_id": "api2-gpt56sol-multi-room-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api2-gpt-5-6-sol",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "api2-scene10-retry3-continue-v1",
@@ -38,7 +38,7 @@
     },
     {
       "campaign_id": "api2-kimi-k3-multi-room-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api2-kimi-k3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "api2-scene10-retry3-continue-v1",
@@ -46,7 +46,7 @@
     },
     {
       "campaign_id": "api2-glm53-multi-room-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api2-glm-5-3",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "api2-scene10-retry3-continue-v1",
@@ -54,7 +54,7 @@
     },
     {
       "campaign_id": "api3-opus48-high-multi-room-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api3-claude-opus-4-8-high",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "api3-scene10-retry2-continue-v1",
@@ -62,7 +62,7 @@
     },
     {
       "campaign_id": "api3-opus48-multi-room-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api3-claude-opus-4-8",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "api3-scene10-retry2-continue-v1",
@@ -70,7 +70,7 @@
     },
     {
       "campaign_id": "api3-sonnet5-multi-room-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api3-claude-sonnet-5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "api3-scene10-retry2-continue-v1",
@@ -78,7 +78,7 @@
     },
     {
       "campaign_id": "api3-opus5-multi-room-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api3-claude-opus-5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "api3-scene10-retry2-continue-v1",
@@ -86,7 +86,7 @@
     },
     {
       "campaign_id": "api3-fable5-multi-room-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api3-claude-fable-5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "api3-scene10-retry2-continue-v1",
@@ -94,7 +94,7 @@
     },
     {
       "campaign_id": "api2-gpt56sol-multi-room-retry5-v2",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api2-gpt-5-6-sol-retry5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "multi-room-retry5-continue-v1",
@@ -102,7 +102,7 @@
     },
     {
       "campaign_id": "api2-kimi-k3-multi-room-retry5-v2",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api2-kimi-k3-retry5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "multi-room-retry5-continue-v1",
@@ -110,7 +110,7 @@
     },
     {
       "campaign_id": "api2-kimi-k3-multi-room-retry5-stagec1500-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api2-kimi-k3-retry5-stagec1500",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "multi-room-retry5-continue-v1",
@@ -118,7 +118,7 @@
     },
     {
       "campaign_id": "api2-glm53-multi-room-retry5-v2",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api2-glm-5-3-retry5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "multi-room-retry5-continue-v1",
@@ -126,7 +126,7 @@
     },
     {
       "campaign_id": "api2-hy4-preview-multi-room-retry5-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api2-hy4-preview-retry5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "multi-room-retry5-continue-v1",
@@ -134,7 +134,7 @@
     },
     {
       "campaign_id": "tokenhub-hy4-preview-multi-room-retry5-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "tokenhub-hy4-preview-retry5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "multi-room-retry5-continue-v1",
@@ -142,7 +142,7 @@
     },
     {
       "campaign_id": "api3-opus5-multi-room-retry5-v2",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api3-claude-opus-5-retry5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "multi-room-retry5-continue-v1",
@@ -150,7 +150,7 @@
     },
     {
       "campaign_id": "api3-sonnet5-multi-room-retry5-v2",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api3-claude-sonnet-5-retry5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "multi-room-retry5-continue-v1",
@@ -158,7 +158,7 @@
     },
     {
       "campaign_id": "api3-fable5-multi-room-retry5-v2",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api3-claude-fable-5-retry5",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "multi-room-retry5-continue-v1",
@@ -166,7 +166,7 @@
     },
     {
       "campaign_id": "api2-gpt6-astra-xhigh-multi-room-v1",
-      "workflow_profile_id": "frozen-two-stage-multi-room-with-architecture-v1",
+      "workflow_profile_id": "shared-two-stage-multi-room-with-architecture-v1",
       "model_profile_id": "api2-gpt-6-astra-xhigh",
       "retrieval_profile_id": "imaginarium-qwen3-embedding-0.6b-stable-top1-v2",
       "execution_policy_id": "api2-scene10-retry3-continue-v1",
