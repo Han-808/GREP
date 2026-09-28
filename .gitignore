@@ -90,3 +90,6 @@ downloads/
 
 # Website source and display data are distributed as Release assets.
 /website/
+
+# Combined website and score datasets are Release attachments.
+/data/
