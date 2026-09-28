@@ -127,10 +127,24 @@ def _write_json(path: Path, value: Any) -> None:
 def test_checked_in_campaign_bundle_is_portable_and_immutable() -> None:
     bundle = load_campaign_profile_bundle(PROFILE_ROOT)
 
-    # Counts grow when a model is onboarded; the last +1 each is Astra (xhigh).
+    # Counts grow when a model is onboarded.  Astra (xhigh) added one route,
+    # one model and one campaign; the Open-space +10 expansion added five
+    # retry-3 model profiles and eight `plus10` campaigns (brief_10..19); the
+    # consolidated make-up round then added two 1800s-timeout profiles
+    # (api2-kimi-k3-t1800, api2-glm-5-3-t1800) and three rerun campaigns
+    # (two t1800 + api2-gpt56sol-plus10-rerun-v1 reusing the 3000s Sol profile).
+    # Stage 1 track (b) added two `high`-effort profiles (api2-kimi-k3-high,
+    # api2-glm-5-3-high) and three gap-only campaigns that run just the briefs
+    # still missing from the merged set; the Opus gap campaign needs no new
+    # profile because the legacy core emits no effort field at all.  The Sonnet
+    # gap campaign then added the v3 core's workflow and brief set, reusing the
+    # existing retry-3 Sonnet profile; Kimi and GLM later got `-high-gap-v3`
+    # variants on that same core once Kimi was seen to fence an emission too.
     assert len(bundle.routes.routes) == 7
-    assert len(bundle.models.models) == 18
-    assert len(bundle.campaigns.campaigns) == 5
+    assert len(bundle.models.models) == 27
+    assert len(bundle.campaigns.campaigns) == 22
+    assert len(bundle.contracts.workflow_by_id) == 2
+    assert len(bundle.contracts.brief_set_by_id) == 3
     campaign, model, route = bundle.resolve_campaign(
         "api3-opus48-high-scene10-v2"
     )
@@ -340,7 +354,13 @@ def test_multiple_models_share_one_retrieval_profile_without_resource_fields() -
     assert {item["retrieval_profile_id"] for item in campaigns} == {
         RETRIEVAL_PROFILE_ID
     }
-    assert len({item["model_profile_id"] for item in campaigns}) == 5
+    # 5 scene10 models + 8 plus10 models, of which Kimi and GLM reuse the
+    # scene10 profile (same retry budget), so 11 distinct.  The make-up round
+    # adds two more (api2-kimi-k3-t1800, api2-glm-5-3-t1800); the Sol rerun
+    # reuses api2-gpt-5-6-sol, so 13 distinct model profiles.  Stage 1 track (b)
+    # adds api2-kimi-k3-high and api2-glm-5-3-high; its Opus gap campaign reuses
+    # api3-claude-opus-5-retry3, so 15 distinct.
+    assert len({item["model_profile_id"] for item in campaigns}) == 15
     allowed = {
         "campaign_id",
         "workflow_profile_id",
@@ -727,6 +747,42 @@ def test_unknown_campaign_contract_reference_fails_closed(tmp_path: Path) -> Non
     raw["campaigns"][0]["execution_policy_id"] = "unknown-policy-v9"
     _write_json(tmp_path / "campaigns_v2.json", raw)
     with pytest.raises(ValueError, match="unknown contract reference"):
+        load_campaign_profile_bundle(tmp_path)
+
+
+def test_campaign_may_select_an_ordered_subset_of_its_brief_set() -> None:
+    bundle = load_campaign_profile_bundle(PROFILE_ROOT)
+    brief_set = bundle.contracts.brief_set_by_id["hy34-paired-briefs-v2"]
+    assert brief_set.ordered_brief_ids == tuple(
+        f"brief_{index:02d}" for index in range(20)
+    )
+    scene10, _, _ = bundle.resolve_campaign("api2-kimi-k3-scene10-v2")
+    plus10, _, _ = bundle.resolve_campaign("api2-kimi-k3-plus10-v1")
+    assert scene10.brief_set_id == plus10.brief_set_id == "hy34-paired-briefs-v2"
+    assert scene10.ordered_brief_ids == brief_set.ordered_brief_ids[:10]
+    assert plus10.ordered_brief_ids == brief_set.ordered_brief_ids[10:]
+
+
+@pytest.mark.parametrize(
+    ("ordered_brief_ids", "message"),
+    [
+        (["brief_11", "brief_10"], "brief order differs"),
+        (["brief_10", "brief_10"], "must not contain duplicates"),
+        (["brief_10", "brief_20"], "outside its brief-set contract"),
+    ],
+)
+def test_campaign_brief_subset_must_follow_brief_set_order(
+    tmp_path: Path, ordered_brief_ids: list[str], message: str
+) -> None:
+    for path in PROFILE_ROOT.glob("*.json"):
+        shutil.copy2(path, tmp_path / path.name)
+    raw = json.loads((tmp_path / "campaigns_v2.json").read_text(encoding="utf-8"))
+    target = next(
+        item for item in raw["campaigns"] if item["campaign_id"] == "api2-kimi-k3-plus10-v1"
+    )
+    target["ordered_brief_ids"] = ordered_brief_ids
+    _write_json(tmp_path / "campaigns_v2.json", raw)
+    with pytest.raises(ValueError, match=message):
         load_campaign_profile_bundle(tmp_path)
 
 

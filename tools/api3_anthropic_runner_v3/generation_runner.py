@@ -75,6 +75,33 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
+def load_model_json_emission(content: bytes) -> tuple[Any, bytes, str]:
+    """Strictly parse raw JSON, or one otherwise-empty JSON code fence.
+
+    Some OpenAI-compatible routes return a Markdown envelope even though both
+    stage prompts forbid it, and the strict parser then fails on the opening
+    backtick while the JSON inside is perfectly valid.  Exactly one
+    whole-response fence may be removed; this must never extract JSON from
+    prose, repair JSON, or alter the parsed value.  The original bytes are
+    always persisted separately as the first-emission artifact, and the envelope
+    is reported so callers can relax the byte-copy invariant only when a fence
+    was actually stripped.
+    """
+
+    text = content.decode("utf-8", errors="strict")
+    lines = text.strip().splitlines()
+    envelope = "raw_json"
+    normalized_text = text
+    if (
+        len(lines) >= 3
+        and lines[0].strip().lower() in {"```", "```json"}
+        and lines[-1].strip() == "```"
+    ):
+        normalized_text = "\n".join(lines[1:-1]).strip()
+        envelope = "single_json_code_fence_v1"
+    return loads_strict(normalized_text), normalized_text.encode("utf-8"), envelope
+
+
 def _artifact_safe_transport_error(
     error_type: str | None,
     stage: str | None,
@@ -800,10 +827,10 @@ def run_case(
         )
     write_exclusive(case_dir / "object_plan_first_emission.json", stage_a.content)
     try:
-        plan = validate_object_plan(
-            loads_strict(stage_a.content.decode("utf-8", errors="strict")),
-            brief=brief,
+        raw_plan, object_plan_bytes, stage_a_envelope = load_model_json_emission(
+            stage_a.content
         )
+        plan = validate_object_plan(raw_plan, brief=brief)
     except (UnicodeError, StrictJSONError, ContractError) as exc:
         write_json_exclusive(
             case_dir / "object_plan_validation.json",
@@ -822,8 +849,17 @@ def run_case(
             placement_emission_count=0,
             eligible=False,
         )
-    write_exclusive(case_dir / "object_plan.json", stage_a.content)
-    write_json_exclusive(case_dir / "object_plan_validation.json", {"valid": True})
+    write_exclusive(case_dir / "object_plan.json", object_plan_bytes)
+    if sha256_file(case_dir / "object_plan.json") != sha256_bytes(object_plan_bytes):
+        raise ArtifactError("normalized object plan write mismatch")
+    # The envelope keys are written only when a fence was actually stripped, so
+    # a raw-JSON case stays byte-identical to what the v2 core produced and its
+    # recorded artifact hashes remain comparable across cohorts.
+    plan_validation: dict[str, Any] = {"valid": True}
+    if stage_a_envelope != "raw_json":
+        plan_validation["response_envelope"] = stage_a_envelope
+        plan_validation["syntactic_normalization"] = True
+    write_json_exclusive(case_dir / "object_plan_validation.json", plan_validation)
     retrieval_request = build_retrieval_request(plan)
     write_json_exclusive(case_dir / "retrieval_requests.json", retrieval_request)
     try:
@@ -982,8 +1018,11 @@ def run_case(
     first_emission = case_dir / "catalog_placement_first_emission.json"
     write_exclusive(first_emission, stage_c.content)
     try:
+        raw_placement, placement_bytes, stage_c_envelope = load_model_json_emission(
+            stage_c.content
+        )
         validate_placement(
-            loads_strict(stage_c.content.decode("utf-8", errors="strict")),
+            raw_placement,
             plan=plan,
             retrieval_results=retrieval_results,
             brief=brief,
@@ -1006,10 +1045,21 @@ def run_case(
             placement_emission_count=1,
             eligible=False,
         )
-    write_json_exclusive(case_dir / "placement_validation.json", {"valid": True})
+    placement_validation: dict[str, Any] = {"valid": True}
+    if stage_c_envelope != "raw_json":
+        placement_validation["response_envelope"] = stage_c_envelope
+        placement_validation["syntactic_normalization"] = True
+    write_json_exclusive(case_dir / "placement_validation.json", placement_validation)
     frozen_placement = case_dir / "catalog_placement_v1.json"
-    write_exclusive(frozen_placement, first_emission.read_bytes())
-    if sha256_file(first_emission) != sha256_file(frozen_placement):
+    write_exclusive(frozen_placement, placement_bytes)
+    if sha256_file(frozen_placement) != sha256_bytes(placement_bytes):
+        raise ArtifactError("normalized placement write mismatch")
+    # The frozen placement is still a byte copy of the emission whenever the
+    # model obeyed the prompt; the invariant is relaxed only for the fence case,
+    # where the stripped envelope is recorded in placement_validation.json.
+    if stage_c_envelope == "raw_json" and sha256_file(first_emission) != sha256_file(
+        frozen_placement
+    ):
         raise ArtifactError("placement byte-copy hash mismatch")
     return _finalize_case(
         case_dir=case_dir,
