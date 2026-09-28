@@ -87,3 +87,6 @@ downloads/
 !/tools/sceneeval_hy4_runner_v050/data/
 !/tools/sceneeval_hy4_runner_v050/data/**
 !/tools/api3_anthropic_runner_v2/README.md
+
+# Website source and display data are distributed as Release assets.
+/website/
