@@ -158,6 +158,8 @@ class SceneWeaverAdapter(HarnessConverterAdapter):
         if not path_value:
             return cfg
         loaded = read_json(path_value)
+        if isinstance(loaded, Mapping) and "sceneweaver_native_floor_frames" in loaded:
+            cfg.setdefault("sceneweaver_native_floor_frames", loaded["sceneweaver_native_floor_frames"])
         if isinstance(loaded, Mapping) and isinstance(
             loaded.get("asset_bindings"), Mapping
         ):

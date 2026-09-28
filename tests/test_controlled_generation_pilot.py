@@ -10,12 +10,32 @@ import pytest
 
 from benchmark.generation_comparison.pilot import (
     _execution_readiness,
+    _upstream_execution_evidence,
     _trajectory_summary,
     bridge_execution_hashes,
     prepare_controlled_pilot,
     run_prepared_pilot,
 )
 from benchmark.utils.io import read_json, write_json
+
+
+@pytest.mark.parametrize(
+    ("record", "started"),
+    [
+        (None, False),
+        ({"runner_kind": "subprocess", "return_code": None}, False),
+        ({"runner_kind": "subprocess", "return_code": 0}, True),
+        ({"runner_kind": "subprocess", "return_code": 3}, True),
+        ({"runner_kind": "subprocess", "return_code": -9, "cancelled": True}, True),
+        ({"runner_kind": "subprocess", "timed_out": True}, True),
+        ({"runner_kind": "callback", "return_code": 0}, False),
+        ({"runner_kind": "configured_native_artifact", "return_code": 0}, False),
+    ],
+)
+def test_upstream_launch_claim_requires_process_evidence(tmp_path, record, started):
+    if record is not None:
+        write_json(tmp_path / "generator/execution/execution_result.json", record)
+    assert _upstream_execution_evidence(tmp_path)["upstream_process_started"] is started
 
 
 def test_bridge_execution_hashes_are_operator_reproducible(tmp_path: Path) -> None:
@@ -253,6 +273,106 @@ def test_prepare_pilot_preflights_assets_cases_hashes_and_readiness(
     assert len({row["protocol_sha256"] for row in result["cases"]}) == 5
 
 
+def test_case_subset_preserves_source_case_and_catalog_identities(tmp_path: Path) -> None:
+    from benchmark.generation_comparison.prepared import verify_prepared_artifacts
+
+    spec = _pilot_spec()
+    before = json.dumps(spec, sort_keys=True)
+    assets = _asset_root(tmp_path / "assets")
+    full = prepare_controlled_pilot(spec=spec, asset_root=assets, out_dir=tmp_path / "full")
+    subset = prepare_controlled_pilot(
+        spec=spec, asset_root=assets, out_dir=tmp_path / "subset",
+        case_ids=["case_005", "case_002"],
+    )
+    assert [row["case_id"] for row in subset["cases"]] == ["case_002", "case_005"]
+    assert subset["source_spec_sha256"] == full["source_spec_sha256"]
+    assert read_json(subset["catalog"]) == read_json(full["catalog"])
+    assert subset["evaluator_config_sha256"] == full["evaluator_config_sha256"]
+    source_rows = {row["case_id"]: row for row in full["cases"]}
+    for row in subset["cases"]:
+        source = source_rows[row["case_id"]]
+        for key in (
+            "case_sha256", "protocol_sha256", "architecture_sha256",
+            "object_inventory_sha256", "asset_binding_sha256",
+            "generation_input_sha256", "public_object_plan_sha256",
+        ):
+            assert row[key] == source[key]
+        for key in ("generation_input", "evaluation_object_plan", "protocol"):
+            assert Path(row[key]).read_bytes() == Path(source[key]).read_bytes()
+    assert json.dumps(spec, sort_keys=True) == before
+    verified = verify_prepared_artifacts(tmp_path / "subset", subset)
+    assert set(verified["cases"]) == {"case_002", "case_005"}
+    selection = read_json(subset["protocol"])["case_selection"]
+    assert selection["selected_case_ids"] == ["case_002", "case_005"]
+    assert selection["source_case_ids"] == [row["case_id"] for row in spec["cases"]]
+    assert not selection["case_definitions_modified"]
+    assert not selection["catalog_subsetted"]
+
+
+@pytest.mark.parametrize("case_ids", [[], ["missing"], ["case_001", "case_001"], "case_001", [1]])
+def test_invalid_case_subset_rejected_before_output(tmp_path: Path, case_ids) -> None:
+    with pytest.raises(ValueError, match="case_ids must be"):
+        prepare_controlled_pilot(
+            spec=_pilot_spec(), asset_root=tmp_path / "not_read",
+            out_dir=tmp_path / "not_created", case_ids=case_ids,
+        )
+    assert not (tmp_path / "not_created").exists()
+
+
+def test_subset_does_not_hide_an_invalid_unselected_source_case(tmp_path: Path) -> None:
+    spec = _pilot_spec()
+    spec["cases"][-1]["objects"][0]["asset_id"] = "unapproved_asset"
+    with pytest.raises(ValueError, match="unknown asset"):
+        prepare_controlled_pilot(
+            spec=spec, asset_root=tmp_path / "not_read", out_dir=tmp_path / "not_created",
+            case_ids=["case_001"],
+        )
+    assert not (tmp_path / "not_created").exists()
+
+
+def test_single_nonfirst_case_can_be_prepared_and_uses_existing_offline_path(tmp_path: Path) -> None:
+    prepared = prepare_controlled_pilot(
+        spec=_pilot_spec(methods=["catalog_placement"]),
+        asset_root=_asset_root(tmp_path / "assets"), out_dir=tmp_path / "pilot",
+        case_ids=["case_002"],
+    )
+    native = write_json(tmp_path / "native.json", {
+        "schema_version": "catalog_placement_v1",
+        "instances": [{
+            "instance_id": f"chair_instance_{index}", "slot_id": f"chair_{index}",
+            "asset_id": "chair_asset", "center_m": [1.0 + 2.0 * index, 2.0, 0.5],
+            "uniform_scale": 1.0, "rotation_euler_xyz_deg": [0.0, 0.0, 0.0],
+        } for index in range(2)],
+    })
+    result = run_prepared_pilot(
+        prepared_dir=tmp_path / "pilot", allow_offline_artifacts=True,
+        method_outputs={"catalog_placement": {"case_002": native}},
+    )
+    assert result["case_count"] == result["planned_runs"] == result["attempted_runs"] == 1
+    assert result["valid_runs"] == 1
+    # Subsetting must not relax the full evaluator gate or claim an API run.
+    assert not result["experiment_complete"]
+    assert not result["real_upstream_execution_performed"]
+    rows = [json.loads(line) for line in (tmp_path / "pilot/results.jsonl").read_text().splitlines()]
+    assert [row["case_id"] for row in rows] == ["case_002"]
+    assert rows[0]["failure_class"] == "evaluator_infrastructure_failure"
+
+
+def test_prepare_cli_accepts_explicit_case_subset(tmp_path, monkeypatch, capsys) -> None:
+    from benchmark.generation_comparison.pilot import main
+
+    source = write_json(tmp_path / "spec.json", _pilot_spec())
+    assets = _asset_root(tmp_path / "assets")
+    monkeypatch.setattr(sys, "argv", [
+        "pilot", "prepare", "--spec", str(source), "--asset-root", str(assets),
+        "--out-dir", str(tmp_path / "pilot"), "--case-id", "case_002",
+    ])
+    main()
+    result = json.loads(capsys.readouterr().out)
+    assert result["status"] == "prepared"
+    assert [row["case_id"] for row in result["cases"]] == ["case_002"]
+
+
 def test_asset_category_mismatch_fails_before_generation(tmp_path: Path) -> None:
     asset_root = _asset_root(tmp_path / "assets")
     spec = _pilot_spec()
@@ -355,7 +475,10 @@ def test_offline_dry_run_generates_tables_without_claiming_real_execution(
         allow_offline_artifacts=True,
     )
 
-    assert result["status"] == "completed"
+    # Conversion success without complete evaluator coverage is not a completed
+    # experiment (Pro F6); retain the artifact and the unscored result.
+    assert result["status"] == "failed"
+    assert result["experiment_complete"] is False
     assert result["attempted_runs"] == 1
     assert result["valid_runs"] == 1
     assert result["real_upstream_execution_performed"] is False
@@ -571,6 +694,113 @@ def test_sceneweaver_trajectory_summary_uses_only_evaluator_reports(
         "trajectory_hard_failure_fixes": 2,
         "trajectory_hard_failure_regressions": 1,
     }
+
+
+@pytest.mark.parametrize("artifact", [
+    "generation_input", "evaluation_object_plan", "protocol", "evaluator_config",
+    "catalog", "case_manifest",
+])
+def test_prepared_artifact_drift_rejects_before_any_generation(
+    artifact: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    prepared = prepare_controlled_pilot(
+        spec=_pilot_spec(methods=["catalog_placement"]),
+        asset_root=_asset_root(tmp_path / "assets"), out_dir=tmp_path / "pilot",
+    )
+    # Corrupt a later case as well: the gate must check the entire planned
+    # cohort before spending a call on the first case.
+    row = prepared if artifact in {"evaluator_config", "catalog"} else prepared["cases"][-1]
+    path = Path(row[artifact])
+    content = read_json(path)
+    content["unexpected_drift"] = True
+    write_json(path, content)
+    calls = []
+    monkeypatch.setattr(
+        "benchmark.generation_comparison.pilot.run_controlled_generation",
+        lambda **kwargs: calls.append(kwargs),
+    )
+    with pytest.raises(ValueError, match="prepared artifact hash mismatch"):
+        run_prepared_pilot(prepared_dir=tmp_path / "pilot")
+    assert calls == []
+    assert read_json(prepared["manifest_path"])["status"] == "prepared"
+
+
+def test_blocked_units_are_all_reported_and_cli_exits_nonzero(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture,
+) -> None:
+    from benchmark.generation_comparison.pilot import main
+
+    prepare_controlled_pilot(
+        spec=_pilot_spec(), asset_root=_asset_root(tmp_path / "assets"),
+        out_dir=tmp_path / "pilot",
+    )
+    config = write_json(tmp_path / "methods.json", {})
+    monkeypatch.setattr(sys, "argv", [
+        "pilot", "run", "--prepared-dir", str(tmp_path / "pilot"),
+        "--method-configs", str(config),
+    ])
+    with pytest.raises(SystemExit) as exc:
+        main()
+    assert exc.value.code == 2
+    result = json.loads(capsys.readouterr().out)
+    assert result["status"] == "blocked"
+    assert result["attempted_runs"] == 0
+    assert result["planned_runs"] == 15
+    assert not result["real_upstream_execution_performed"]
+    rows = [json.loads(line) for line in (tmp_path / "pilot/results.jsonl").read_text().splitlines()]
+    assert len(rows) == 15
+    assert all(row["run_status"] == "blocked" and row["readiness"] for row in rows)
+
+
+def test_cancellation_is_propagated_and_does_not_start_next_unit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    prepared = prepare_controlled_pilot(
+        spec=_pilot_spec(methods=["catalog_placement"]),
+        asset_root=_asset_root(tmp_path / "assets"), out_dir=tmp_path / "pilot",
+    )
+    native = write_json(tmp_path / "native.json", {})
+    calls = []
+
+    def cancel(**kwargs):
+        calls.append(kwargs)
+        raise KeyboardInterrupt("operator stop")
+
+    monkeypatch.setattr("benchmark.generation_comparison.pilot.run_controlled_generation", cancel)
+    with pytest.raises(KeyboardInterrupt, match="operator stop"):
+        run_prepared_pilot(
+            prepared_dir=tmp_path / "pilot", allow_offline_artifacts=True,
+            method_outputs={"catalog_placement": {row["case_id"]: native for row in prepared["cases"]}},
+        )
+    assert len(calls) == 1
+    result = read_json(prepared["manifest_path"])
+    assert result["status"] == "cancelled"
+    assert result["attempted_runs"] == 1
+    assert result["unattempted_runs"] == 4
+    rows = [json.loads(line) for line in (tmp_path / "pilot/results.jsonl").read_text().splitlines()]
+    assert [row["run_status"] for row in rows] == ["cancelled"] + ["skipped"] * 4
+
+
+def test_prelaunch_output_conflict_preserves_old_files_and_finishes_plan(tmp_path):
+    prepared = prepare_controlled_pilot(
+        spec=_pilot_spec(methods=["catalog_placement"]),
+        asset_root=_asset_root(tmp_path / "assets"), out_dir=tmp_path / "pilot",
+    )
+    native = write_json(tmp_path / "native.json", {})
+    old = write_json(tmp_path / "pilot/cases/case_001/catalog_placement/comparison/run_manifest.json",
+                     {"old_run": "must not be attributed or overwritten"})
+    before = old.read_bytes()
+    with pytest.raises(FileExistsError, match="will not be overwritten"):
+        run_prepared_pilot(
+            prepared_dir=tmp_path / "pilot", allow_offline_artifacts=True,
+            method_outputs={"catalog_placement": {row["case_id"]: native for row in prepared["cases"]}},
+        )
+    assert old.read_bytes() == before
+    result = read_json(prepared["manifest_path"])
+    assert result["status"] == "blocked" and result["planned_runs"] == 5
+    rows = [json.loads(line) for line in (tmp_path / "pilot/results.jsonl").read_text().splitlines()]
+    assert [row["run_status"] for row in rows] == ["blocked"] + ["skipped"] * 4
+    assert all(not row["attempted"] and row["run_manifest"] is None for row in rows)
 
 
 def _asset_root(root: Path) -> Path:

@@ -15,8 +15,10 @@ from benchmark.adapters.direct_layout.converter import convert_direct_layout
 from benchmark.adapters.layout_vlm.converter import convert_layout_vlm
 from benchmark.adapters.layout_vlm.adapter import LayoutVLMAdapter
 from benchmark.adapters.scene_weaver.converter import (
-    convert_scene_weaver,
     discover_layout_iterations,
+)
+from sceneweaver_test_helpers import (
+    convert_with_synthetic_floor as convert_scene_weaver, synthetic_floor_frame,
 )
 from benchmark.adapters.scene_weaver.adapter import (
     SceneWeaverAdapter,
@@ -28,6 +30,7 @@ from benchmark.adapters.common.execution import (
 )
 from benchmark.generation_comparison.catalog import CanonicalAssetCatalog
 from benchmark.generation_comparison.imaginarium_bundle import (
+    _same_xy_order,
     build_imaginarium_glb_bundle_plan,
     file_sha256,
     validate_imaginarium_glb_bundle,
@@ -1046,7 +1049,8 @@ def test_directlayout_exact_binding_sidecar_does_not_mutate_native_artifact(
         "preserved_asset_bindings_sidecar"
     )
     rotation_z = scene["objects"][0]["rotation"][2]
-    assert ((rotation_z - 200.0 + 180.0) % 360.0) - 180.0 == pytest.approx(0.0)
+    # Actual pinned native renderer rotates clockwise: 180 - 20, not 180 + 20.
+    assert ((rotation_z - 160.0 + 180.0) % 360.0) - 180.0 == pytest.approx(0.0)
 
 
 def test_layoutvlm_processed_bbox_and_front_are_restored_to_canonical_mesh_frame(
@@ -1444,7 +1448,7 @@ def test_layoutvlm_constraint_guard_wraps_the_final_upstream_exec_boundary(
     assert tracking["rejected_program_count"] == 1
 
 
-def test_sceneweaver_released_world_aabb_restores_local_bbox_and_front_basis(
+def test_sceneweaver_released_object_dimensions_restore_local_bbox_and_front_basis(
     tmp_path: Path,
 ) -> None:
     native = write_json(
@@ -1467,9 +1471,9 @@ def test_sceneweaver_released_world_aabb_restores_local_bbox_and_front_basis(
         {
             "rotation_unit": "radian",
             "sceneweaver_native_size_semantics": (
-                "released_world_aabb_rounded_2dp"
+                "released_object_dimensions_rounded_2dp"
             ),
-            "sceneweaver_world_aabb_tolerance": 1.0e-6,
+            "sceneweaver_serialization_tolerance": 1.0e-6,
             "sceneweaver_orientation_basis": (
                 "bake_catalog_front_to_sceneweaver_positive_x"
             ),
@@ -1491,6 +1495,12 @@ def test_sceneweaver_released_world_aabb_restores_local_bbox_and_front_basis(
                     "full_precision_native_local_bbox_size_by_iteration": {
                         "0": [0.8, 0.7, 1.0]
                     },
+                    "full_precision_native_bottom_center_by_iteration": {
+                        "0": [2.0, 2.0, 0.0]
+                    },
+                    "full_precision_native_object_dimensions_by_iteration": {
+                        "0": [0.7, 0.8, 1.0]
+                    },
                     "anchor_basis": {
                         "policy": (
                             "rebase_catalog_bbox_bottom_center_to_sceneweaver_origin"
@@ -1510,7 +1520,7 @@ def test_sceneweaver_released_world_aabb_restores_local_bbox_and_front_basis(
     assert obj["center"] == pytest.approx([2.0, 2.0, 0.5])
     audit = obj["metadata"]["geometry_audit"]
     assert audit["native_size"] == [0.7, 0.8, 1.0]
-    assert audit["released_world_aabb_verified"] is True
+    assert audit["released_object_dimensions_verified"] is True
 
 
 def test_sceneweaver_uses_full_precision_pose_before_released_rounding(
@@ -1525,7 +1535,7 @@ def test_sceneweaver_uses_full_precision_pose_before_released_rounding(
                     "asset_id": "commode.asset",
                     "location": [3.0, 2.0, 0.0],
                     "rotation": [0.0, 0.0, 0.0],
-                    "size": [4.5, 1.19, 1.0],
+                    "size": [4.49, 1.17, 1.0],
                 }
             },
         },
@@ -1552,9 +1562,9 @@ def test_sceneweaver_uses_full_precision_pose_before_released_rounding(
         {
             "rotation_unit": "radian",
             "sceneweaver_native_size_semantics": (
-                "released_world_aabb_rounded_2dp"
+                "released_object_dimensions_rounded_2dp"
             ),
-            "sceneweaver_world_aabb_tolerance": 1.0e-6,
+            "sceneweaver_serialization_tolerance": 1.0e-6,
             "sceneweaver_asset_geometry_tolerance_m": 1.0e-4,
             "sceneweaver_orientation_basis": (
                 "bake_catalog_front_to_sceneweaver_positive_x"
@@ -1577,6 +1587,12 @@ def test_sceneweaver_uses_full_precision_pose_before_released_rounding(
                     "full_precision_native_local_bbox_size_by_iteration": {
                         "3": exact_size
                     },
+                    "full_precision_native_bottom_center_by_iteration": {
+                        "3": [3.0, 2.0, 0.0]
+                    },
+                    "full_precision_native_object_dimensions_by_iteration": {
+                        "3": exact_size
+                    },
                     "anchor_basis": {
                         "policy": (
                             "rebase_catalog_bbox_bottom_center_to_sceneweaver_origin"
@@ -1595,10 +1611,10 @@ def test_sceneweaver_uses_full_precision_pose_before_released_rounding(
     audit = obj["metadata"]["geometry_audit"]
     assert audit["native_serialized_rotation"] == [0.0, 0.0, 0.0]
     assert audit["full_precision_native_rotation"] == precise_rotation
-    assert audit["expected_released_world_aabb"] == [4.5, 1.19, 1.0]
+    assert audit["expected_released_object_dimensions"] == [4.49, 1.17, 1.0]
 
 
-def test_sceneweaver_released_zero_height_aabb_retains_positive_catalog_size(
+def test_sceneweaver_released_zero_height_dimension_retains_positive_catalog_size(
     tmp_path: Path,
 ) -> None:
     native = write_json(
@@ -1618,8 +1634,8 @@ def test_sceneweaver_released_zero_height_aabb_retains_positive_catalog_size(
     exact_size = [0.8, 0.7, 0.000076]
     config = {
         "rotation_unit": "radian",
-        "sceneweaver_native_size_semantics": "released_world_aabb_rounded_2dp",
-        "sceneweaver_world_aabb_tolerance": 1.0e-6,
+        "sceneweaver_native_size_semantics": "released_object_dimensions_rounded_2dp",
+        "sceneweaver_serialization_tolerance": 1.0e-6,
         "sceneweaver_asset_geometry_tolerance_m": 1.0e-4,
         "sceneweaver_orientation_basis": (
             "bake_catalog_front_to_sceneweaver_positive_x"
@@ -1642,6 +1658,12 @@ def test_sceneweaver_released_zero_height_aabb_retains_positive_catalog_size(
                 "full_precision_native_local_bbox_size_by_iteration": {
                     "0": exact_size
                 },
+                "full_precision_native_bottom_center_by_iteration": {
+                    "0": [2.0, 2.0, 0.0]
+                },
+                "full_precision_native_object_dimensions_by_iteration": {
+                    "0": exact_size
+                },
                 "anchor_basis": {
                     "policy": (
                         "rebase_catalog_bbox_bottom_center_to_sceneweaver_origin"
@@ -1662,7 +1684,7 @@ def test_sceneweaver_released_zero_height_aabb_retains_positive_catalog_size(
     assert obj["size"] == pytest.approx(exact_size)
     assert obj["center"][2] == pytest.approx(exact_size[2] / 2.0)
     assert obj["metadata"]["geometry_audit"][
-        "expected_released_world_aabb"
+        "expected_released_object_dimensions"
     ] == [0.8, 0.7, 0.0]
 
 
@@ -1760,6 +1782,10 @@ def test_sceneweaver_controlled_trajectory_reuses_preserved_binding_sidecar(
         write_json(
             sidecar,
             {
+                "sceneweaver_native_floor_frames": {
+                    str(i): synthetic_floor_frame(native_root / f"layout_{i}.json", i)
+                    for i in range(2)
+                },
                 "asset_bindings": {
                     "reading_chair_1": {
                         "asset_key": "chair.asset",
@@ -1780,6 +1806,14 @@ def test_sceneweaver_controlled_trajectory_reuses_preserved_binding_sidecar(
                             "1": [0.0, 0.0, 0.0],
                         },
                         "full_precision_native_local_bbox_size_by_iteration": {
+                            "0": [0.8, 0.7, 1.0],
+                            "1": [0.8, 0.7, 1.0],
+                        },
+                        "full_precision_native_bottom_center_by_iteration": {
+                            "0": [1.5, 2.0, 0.0],
+                            "1": [2.0, 2.0, 0.0],
+                        },
+                        "full_precision_native_object_dimensions_by_iteration": {
                             "0": [0.8, 0.7, 1.0],
                             "1": [0.8, 0.7, 1.0],
                         },
@@ -1945,6 +1979,10 @@ def test_imaginarium_glb_bundle_plan_and_validation_are_content_addressed(
         "asset_count": 1,
         "errors": [],
     }
+    with pytest.raises(FileExistsError, match="fresh attempt"):
+        build_imaginarium_glb_bundle_plan(
+            catalog_spec={"assets": []}, asset_root=tmp_path / "assets", bundle_root=tmp_path / "bundle",
+        )
     metadata_path = source / "chair.asset_metadata.json"
     metadata_bytes = metadata_path.read_bytes()
     metadata_path.write_text("{}\n", encoding="utf-8")
@@ -1976,6 +2014,56 @@ def test_imaginarium_glb_bundle_plan_and_validation_are_content_addressed(
         item["code"] in {"target_root_mismatch", "report_plan_mismatch"}
         for item in root_validation["errors"]
     )
+
+
+@pytest.mark.parametrize("left,right,expected", [
+    ([0.6151453, 0.6151454, 1.15], [0.6151455, 0.6151453, 1.15], True),
+    ([0.8, 0.7, 1.0], [0.8, 0.7, 1.0], True),
+    ([0.7, 0.8, 1.0], [0.8, 0.7, 1.0], False),
+    ([float("nan"), 0.8, 1.0], [0.8, 0.7, 1.0], False),
+])
+def test_bundle_xy_order_respects_frozen_geometry_tolerance(left, right, expected):
+    assert _same_xy_order(left, right) is expected
+
+
+def test_bundle_worker_preserves_loose_geometry_and_rejects_overwrite(tmp_path, monkeypatch):
+    source = tmp_path / "fixture.fbx"
+    source.write_bytes(b"native fixture including loose geometry")
+    metadata = write_json(tmp_path / "metadata.json", {})
+    target = tmp_path / "output.glb"
+    calls = []
+    def export(**kwargs):
+        calls.append(kwargs)
+        Path(kwargs["filepath"]).write_bytes(b"exported fixture")
+    bpy = SimpleNamespace(
+        app=SimpleNamespace(version_string="fixture-no-real-blender"),
+        ops=SimpleNamespace(import_scene=SimpleNamespace(fbx=lambda **k: None, gltf=lambda **k: None),
+                            export_scene=SimpleNamespace(gltf=export)),
+    )
+    monkeypatch.setitem(sys.modules, "bpy", bpy)
+    monkeypatch.setitem(sys.modules, "mathutils", SimpleNamespace(Vector=lambda value: value))
+    path = ROOT / "scripts/blender/convert_imaginarium_frozen_bundle.py"
+    spec = importlib.util.spec_from_file_location("fixture_bundle_worker", path)
+    worker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(worker)
+    plan = write_json(tmp_path / "plan.json", {
+        "conversion_policy": {"geometry_tolerance_m": 1e-4},
+        "assets": [{"asset_id": "fixture", "source_fbx": str(source),
+                    "source_metadata": str(metadata), "target_glb": str(target),
+                    "source_fbx_sha256": file_sha256(source), "source_metadata_sha256": file_sha256(metadata),
+                    "expected_bbox_size": [0.8, 0.7, 1.0], "expected_bbox_center": [0, 0, 0]}],
+    })
+    args = SimpleNamespace(plan=plan, report=tmp_path / "report.json", tolerance=1e-4)
+    monkeypatch.setattr(worker, "_args", lambda: args)
+    monkeypatch.setattr(worker, "_clear", lambda: None)
+    monkeypatch.setattr(worker, "_bounds", lambda: ([0.8, 0.7, 1.0], [0, 0, 0]))
+    worker.main()
+    assert calls[0]["use_mesh_vertices"] and calls[0]["use_mesh_edges"]
+    assert source.read_bytes() == b"native fixture including loose geometry"
+    assert read_json(args.report)["assets"][0]["geometry_verified"]
+    with pytest.raises(FileExistsError, match="fresh attempt"):
+        worker.main()
+    assert len(calls) == 1
 
 
 def test_bridge_input_builders_preserve_frozen_ids_and_geometry(
@@ -2422,6 +2510,12 @@ def test_sceneweaver_bridge_validates_every_frozen_iteration(
                                 0.0,
                                 0.0039 if iteration == 1 else 0.0,
                             ],
+                            "full_precision_native_bottom_center": [
+                                1.0 + iteration * 0.5, 2.0, 0.0
+                            ],
+                            "full_precision_native_object_dimensions": [
+                                0.80005 if iteration == 1 else 0.8, 0.7, 1.0
+                            ],
                         }
                     },
                 }
@@ -2439,6 +2533,12 @@ def test_sceneweaver_bridge_validates_every_frozen_iteration(
     ]["1"] == [0.0, 0.0, 0.0039]
     assert bindings["reading_chair_1"][
         "full_precision_native_local_bbox_size_by_iteration"
+    ]["1"] == [0.80005, 0.7, 1.0]
+    assert bindings["reading_chair_1"][
+        "full_precision_native_bottom_center_by_iteration"
+    ]["1"] == [1.5, 2.0, 0.0]
+    assert bindings["reading_chair_1"][
+        "full_precision_native_object_dimensions_by_iteration"
     ]["1"] == [0.80005, 0.7, 1.0]
     wrong_room_report = deepcopy(
         {
@@ -2459,6 +2559,10 @@ def test_sceneweaver_bridge_validates_every_frozen_iteration(
                             "orientation_basis": orientation_basis,
                             "anchor_basis": anchor_basis,
                             "full_precision_native_euler_xyz": [0.0, 0.0, 0.0],
+                            "full_precision_native_bottom_center": [
+                                1.0 + iteration * 0.5, 2.0, 0.0
+                            ],
+                            "full_precision_native_object_dimensions": [0.8, 0.7, 1.0],
                         }
                     },
                 }
@@ -2513,6 +2617,10 @@ def test_sceneweaver_bridge_validates_every_frozen_iteration(
                             "orientation_basis": orientation_basis,
                             "anchor_basis": anchor_basis,
                             "full_precision_native_euler_xyz": [0.0, 0.0, 0.0],
+                            "full_precision_native_bottom_center": [
+                                1.0 + iteration * 0.5, 2.0, 0.0
+                            ],
+                            "full_precision_native_object_dimensions": [0.8, 0.7, 1.0],
                         }
                     },
                 }
@@ -2557,6 +2665,10 @@ def test_sceneweaver_bridge_validates_every_frozen_iteration(
                         "orientation_basis": orientation_basis,
                         "anchor_basis": anchor_basis,
                         "full_precision_native_euler_xyz": [0.0, 0.0, 0.0],
+                        "full_precision_native_bottom_center": [
+                            1.0 + iteration * 0.5, 2.0, 0.0
+                        ],
+                        "full_precision_native_object_dimensions": [0.8, 0.7, 1.0],
                     }
                 },
             }
@@ -2612,6 +2724,26 @@ def _catalog() -> CanonicalAssetCatalog:
             ],
         }
     )
+
+
+@pytest.mark.parametrize("available", [False, None])
+def test_layoutvlm_missing_differentiable_overlap_backend_fails_before_calls(available):
+    from types import SimpleNamespace
+    bridge = _bridge("layout_vlm_frozen")
+    with pytest.raises(RuntimeError, match="detached CPU fallback is not certified"):
+        bridge._require_differentiable_overlap_backend(
+            SimpleNamespace(ORIENTED_IOU_AVAILABLE=available)
+        )
+
+
+def test_layoutvlm_differentiable_backend_is_recorded():
+    from types import SimpleNamespace
+    bridge = _bridge("layout_vlm_frozen")
+    report = bridge._require_differentiable_overlap_backend(
+        SimpleNamespace(ORIENTED_IOU_AVAILABLE=True)
+    )
+    assert report["oriented_iou_available"] is True
+    assert report["detached_cpu_fallback_allowed"] is False
 
 
 def _protocol(catalog: CanonicalAssetCatalog) -> ComparisonProtocol:

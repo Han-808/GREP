@@ -94,8 +94,8 @@
         "execution": {
           "repo_path": "/ABSOLUTE/PATH/TO/DirectLayout",
           "expected_upstream_commit": "4430535304124dbc8d48f6bb0ea5891e92267986",
-          "expected_entrypoint_sha256": "0f984699824a5849651e639610fd554f5f58e54640f3de8d48ecf6beb96288f1",
-          "expected_bridge_bundle_sha256": "8ad3007fdd4bcd80c4bf894b9a755e240d600d7a04d7e68d1d99db064f7d6db6",
+          "expected_entrypoint_sha256": "92825f6fa803a3773e45bede1748709fb3e797cb2d8505ae5484d019a0f168dc",
+          "expected_bridge_bundle_sha256": "33628c733e7c137fb50e8a6890a246afaa98a2744f9d7132aafd2894d8ca7730",
           "python_executable": "/ABSOLUTE/PATH/TO/directlayout/python",
           "template_variables": {
             "bridge_script": "/ABSOLUTE/PATH/TO/Layout_DDD/scripts/external_harness_bridges/direct_layout_frozen.py"
@@ -145,8 +145,8 @@
         "execution": {
           "repo_path": "/ABSOLUTE/PATH/TO/LayoutVLM",
           "expected_upstream_commit": "85d06b4cd2478551188a0b4a47cd658c85c41315",
-          "expected_entrypoint_sha256": "201cbb4933ad9171138a0ed018b0daea4570bc86d7f0a77241af837f5b230db0",
-          "expected_bridge_bundle_sha256": "cf27f61c1c9fdf0dd6489b468c8b2349f26f91341cb7d87478b1f357ce42c121",
+          "expected_entrypoint_sha256": "39d514f79f2e67a222a3bde99ef6dff5db1ad586fc59998cd24847da4c8c68d6",
+          "expected_bridge_bundle_sha256": "b9875d8cc0ca1f376a1410d0ea6c563579c750c40b2cf7bf872c8e015644a359",
           "python_executable": "/ABSOLUTE/PATH/TO/layoutvlm/python",
           "template_variables": {
             "bridge_script": "/ABSOLUTE/PATH/TO/Layout_DDD/scripts/external_harness_bridges/layout_vlm_frozen.py"
@@ -205,13 +205,13 @@
         "execution": {
           "repo_path": "/ABSOLUTE/PATH/TO/SceneWeaver",
           "expected_upstream_commit": "7ae54b2ec3fc66147704faa7daf7b017ba8b1bd9",
-          "expected_entrypoint_sha256": "5431e9e8cb2f244b46f3d0419f6a446cabb3bebf71dfada0d974a27845ce2a0b",
-          "expected_bridge_bundle_sha256": "e9d0e7172268d45e03094d360729de9a14013249c4a154732fd6a77587cb40ef",
+          "expected_entrypoint_sha256": "05d17f181f1a4f9133c2574f96e4aa9e33bf31732014698306d6dcf8d2efa752",
+          "expected_bridge_bundle_sha256": "f6505f5366d0f503b60c2c63ed811e2c8639de89cc4dffa964e56737208633fe",
           "python_executable": "/ABSOLUTE/PATH/TO/sceneweaver/python",
           "template_variables": {
             "bridge_script": "/ABSOLUTE/PATH/TO/Layout_DDD/scripts/external_harness_bridges/scene_weaver_frozen.py",
-            "frozen_plugin": "/ABSOLUTE/PATH/TO/VERSIONED/sceneweaver_frozen_plugin.py",
-            "frozen_plugin_sha256": "REPLACE_WITH_64_LOWERCASE_HEX_SHA256"
+            "frozen_plugin": "/ABSOLUTE/PATH/TO/Layout_DDD/scripts/external_harness_bridges/scene_weaver_frozen_plugin.py",
+            "frozen_plugin_sha256": "546379190eedd7d8204cf45fcc3d4e8724c5e6ba03c5a93b189f6756fdfbcc2e"
           },
           "environment": {
             "LAYOUT_DDD_API_BASE_URL": "https://YOUR-AUTHORIZED-ENDPOINT/v1"
