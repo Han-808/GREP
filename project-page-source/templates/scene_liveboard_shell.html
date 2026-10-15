@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Examples · GREP</title></head><body>
+<script id="scene-views" type="application/json">{{SCENE_VIEWS_JSON}}</script><script>
+(async()=>{
+ const views=JSON.parse(document.getElementById('scene-views').textContent);
+ const requested=new URLSearchParams(location.search).get('scope')||'open-space';
+ const scope=Object.hasOwn(views,requested)?requested:'open-space';
+ const parsed=new DOMParser().parseFromString(views[scope],'text/html');
+ document.head.replaceChildren(...parsed.head.childNodes);
+ document.body.replaceChildren(...parsed.body.childNodes);
+ for(const attr of parsed.body.attributes)document.body.setAttribute(attr.name,attr.value);
+ for(const previous of [...document.body.querySelectorAll('script')]){
+  const script=document.createElement('script');
+  for(const attr of previous.attributes)script.setAttribute(attr.name,attr.value);
+  script.textContent=previous.textContent;
+  const ready=script.src?new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=reject}):null;
+  previous.replaceWith(script);if(ready)await ready;
+ }
+})().catch(error=>{const p=document.createElement('p');p.textContent='SceneBoard could not load: '+error.message;document.body.appendChild(p)});
+</script></body></html>

@@ -3,6 +3,15 @@
 Layout_DDD generates and evaluates 3D scene layouts. Core APIs live in
 `src/benchmark`; workflows, contracts and operator guidance are in `docs`.
 
+## Project website
+
+[GREP project page](https://han-808.github.io/GREP/) includes an interactive
+overview, generated-room examples, and model leaderboards. The static website
+is built from `project-page/` and checksum-verified images in a repository Release,
+then published through GitHub Pages.
+The examples and rankings currently cover single-room and rectangular multi-room
+model generation. Original experiment archives remain separate.
+
 ## Current implementation
 
 `layout-ddd-evaluate` / `benchmark.api.evaluation.run_evaluate` owns ordinary

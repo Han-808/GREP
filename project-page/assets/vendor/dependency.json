@@ -1,0 +1,15 @@
+{
+  "package": "three",
+  "version": "0.186.1",
+  "license": "MIT",
+  "source": "https://registry.npmjs.org/three/-/three-0.186.1.tgz",
+  "integrity": "sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==",
+  "files": {
+    "build/three.module.js": "three.module.js",
+    "build/three.core.js": "three.core.js",
+    "examples/jsm/controls/OrbitControls.js": "OrbitControls.js",
+    "examples/jsm/geometries/RoundedBoxGeometry.js": "RoundedBoxGeometry.js",
+    "examples/jsm/utils/BufferGeometryUtils.js": "BufferGeometryUtils.js",
+    "LICENSE": "LICENSE.three.txt"
+  }
+}

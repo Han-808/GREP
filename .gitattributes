@@ -1,0 +1,6 @@
+# Keep the static website portable between Windows authoring and Pages runners.
+project-page/** text=auto eol=lf
+project-page-source/** text=auto eol=lf
+scripts/export_project_page.py text eol=lf
+scripts/fetch_project_page_images.py text eol=lf
+project-page/paper/*.pdf binary

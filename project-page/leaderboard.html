@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Compare GREP scene generation results across physical plausibility, visual coherence, and human-use evaluation.">
+  <title>Leaderboard · GREP</title>
+  <link rel="stylesheet" href="./assets/public-board-shared.css">
+  <link rel="stylesheet" href="./assets/leaderboard.css">
+</head>
+<body>
+  <script src="./assets/public-board-policy.js"></script>
+  <header class="topbar"><a class="brand" href="./">GREP</a><nav class="site-navigation" aria-label="Main navigation"><a href="./">Overview</a><a href="./scene_liveboard.html">Examples</a><a href="./leaderboard.html" aria-current="page">Leaderboard</a></nav></header>
+  <main class="board-page leaderboard-page">
+    <section class="page-intro" aria-labelledby="page-title">
+      <h1 id="page-title">Leaderboard</h1>
+      <p id="board-subtitle">Compare generated scenes through physical, visual, and human-use evaluation.</p>
+    </section>
+    <section class="board-hierarchy" aria-label="Benchmark selection">
+      <nav id="board-kind" aria-label="Benchmark type"></nav>
+      <nav id="floorplan-level" class="floorplan-level" aria-label="Benchmark scope"></nav>
+      <p class="hierarchy-context" id="hierarchy-context"></p>
+    </section>
+    <div class="board-context"><span class="scope-name" id="scope-name">Single-room · wall-free</span><span id="coverage-note"></span><a id="browse-examples" href="./scene_liveboard.html?scope=open-space">Explore the examples <span aria-hidden="true">↗</span></a></div>
+    <div id="benchmark-tabs" hidden></div><div id="benchmark-note" hidden></div>
+    <section class="ranking-section" aria-labelledby="ranking-title">
+      <div class="ranking-head">
+        <div><h2 id="ranking-title">Overall ranking</h2><p class="ranking-description" id="ranking-description">Scores range from 0 to 100; higher is better.</p></div>
+        <div class="view-tabs" id="view-tabs" role="group" aria-label="Ranking view">
+          <button class="view-tab" type="button" data-view="overall" aria-pressed="true">Overall</button>
+          <button class="view-tab" type="button" data-view="category" aria-pressed="false">Category</button>
+          <button class="view-tab" type="button" data-view="fine" aria-pressed="false">Fine metric</button>
+        </div>
+      </div>
+      <div class="metric-options" id="metric-options" hidden role="group" aria-label="Metric selector"></div>
+      <div class="board" id="ranking-board" data-view="overall" role="table" aria-labelledby="ranking-title" aria-describedby="table-caption">
+        <div class="table-scroll" tabindex="0" role="region" aria-label="Model ranking, scroll horizontally for all metrics">
+          <div class="table-header" id="ranking-header" role="row"></div>
+          <div id="rows" role="rowgroup"><div class="empty">Loading results…</div></div>
+        </div>
+      </div>
+      <p class="table-caption" id="table-caption"><span id="table-caption-scope">Scored scenes are reported per model.</span> Select a model to <a id="caption-examples" href="./scene_liveboard.html?scope=open-space">inspect its scenes</a>. On smaller screens, scroll the table for all metrics.</p>
+    </section>
+    <details class="supplement" id="chart-disclosure" hidden>
+      <summary>Score comparison <small>Overall scores at a glance</small></summary>
+      <section class="overall-chart" id="overall-chart" aria-label="Overall score comparison" hidden>
+        <div class="overall-chart-head"><h3>Overall score</h3><span class="overall-chart-range" id="overall-chart-range"></span></div>
+        <div class="overall-chart-scroll" tabindex="0" role="region" aria-label="Overall score chart"><div id="overall-chart-canvas"></div></div>
+        <p class="overall-chart-note" id="overall-chart-note"></p>
+      </section>
+    </details>
+    <details class="supplement" id="protocol-disclosure">
+      <summary>Scoring protocol <small>Metric weights and aggregation</small></summary>
+      <div class="supplement-body">
+        <section id="scoring-summary" aria-label="Scoring protocol"><div class="empty">Loading scoring protocol…</div></section>
+        <p class="tier-policy" id="tier-policy"><strong>Generation effort.</strong> China models use the highest available setting; U.S. models use the second-highest available setting.</p>
+      </div>
+    </details>
+  </main>
+  <script src="./assets/public-board-navigation.js"></script>
+  <script src="./assets/leaderboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="GREP: Grounding Generated Room Evaluation in Principles. Explore physical validity, visual coherence, and human-use logic in an interactive room.">
+  <title>GREP — Grounding Generated Room Evaluation in Principles</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2320242b'/%3E%3Ctext x='32' y='46' text-anchor='middle' fill='white' font-family='Arial' font-size='42' font-weight='700'%3EG%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./assets/home.css">
+  <script type="importmap">{"imports":{"three":"./assets/vendor/three.module.js"}}</script>
+  <script type="module" src="./assets/room-demo.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header"><nav class="nav-wrap" aria-label="Main navigation">
+    <a class="brand" href="./" aria-label="GREP home">GREP<span class="brand-dot"></span></a>
+    <div class="nav-links"><a href="./" aria-current="page">Overview</a><a href="./scene_liveboard.html?scope=open-space">Examples</a><a href="./leaderboard.html?scope=open-space">Leaderboard</a></div>
+    <a class="code-link" href="https://github.com/Han-808/GREP" target="_blank" rel="noopener">Code <span aria-hidden="true">↗</span></a>
+  </nav></header>
+  <main id="main">
+    <section class="hero page-width" aria-labelledby="page-title">
+      <h1 id="page-title"><span class="title-grep">GREP</span><span class="title-expansion">Grounding Generated Room<br class="desktop-break"> Evaluation in Principles</span></h1>
+      <p class="hero-description">Physical validity. Visual coherence. Human-use logic.<br>Understand a room through the evidence behind its evaluation.</p>
+      <nav class="research-links" aria-label="Research resources">
+        <a id="paper-link" href="./paper/GREP.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg><span>Paper</span></a>
+        <a href="https://github.com/Han-808/GREP" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg><span>Code</span></a>
+        <a href="./scene_liveboard.html?scope=open-space"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Examples</span></a>
+        <a href="./leaderboard.html?scope=open-space"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20V10h5v10M9 20V4h6v16M15 20v-7h5v7M2 20h20"/></svg><span>Leaderboard</span></a>
+      </nav>
+      <a class="hero-scroll" href="#interactive-demo"><span>Explore the interactive room</span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v16m-6-6 6 6 6-6"/></svg></a>
+    </section>
+
+    <section id="interactive-demo" class="demo-section page-width" aria-labelledby="demo-heading">
+      <div class="section-top"><div><span class="eyebrow">AN INTERACTIVE EXAMPLE</span><h2 id="demo-heading">A room can look right. Look closer.</h2></div><span class="demo-badge"><span></span> Synthetic demonstration</span></div>
+      <div class="inspection-bar"><div class="inspector-identity"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4v4M12 4h8M7 12a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H11a4 4 0 0 1-4-4V12ZM3 15v6M29 15v6M12 26v3M20 26v3"/><circle cx="12" cy="16" r="1.4"/><circle cx="20" cy="16" r="1.4"/><path d="M12 21h8"/></svg><div><strong>GREP inspector</strong><span id="inspection-message" aria-live="polite">Look around. Ask a question. Gather evidence.</span></div></div><button id="tour-btn" class="tour-button" aria-pressed="false" disabled><span id="tour-icon" aria-hidden="true">▶</span><span id="tour-label">Follow the inspection</span></button></div>
+      <div class="inspection-progress" aria-label="Inspection sequence"><span data-tour-stage="overview">Observe</span><span data-tour-stage="collision">Geometry</span><span data-tour-stage="scale">Coherence</span><span data-tour-stage="access">Human-use</span><span data-tour-stage="report">Explain</span></div>
+      <div class="demo-shell" id="demo-shell">
+        <div class="scene-column">
+          <div class="scene-toolbar"><div class="scene-label">Living room <span>· Wall-free</span></div><div class="segmented" aria-label="Scene version"><button id="original-btn" class="selected" aria-pressed="true">Original</button><button id="adjusted-btn" aria-pressed="false">Adjusted</button></div></div>
+          <div id="scene-stage" class="scene-stage" tabindex="0" role="region" aria-label="Interactive 3D room. Drag to rotate, scroll to zoom. Arrow keys rotate; plus and minus zoom. Use finding buttons to inspect issues.">
+            <canvas id="room-canvas" aria-label="3D living-room demonstration"></canvas>
+            <div id="loading-state" class="loading-state"><span class="loading-orbit"></span><strong>Preparing the room</strong><span>A small scene. Three ways to look closer.</span></div>
+            <div id="webgl-fallback" class="webgl-fallback" hidden><strong>3D preview is unavailable in this browser.</strong><p>The three findings remain available in the panel. Try a browser with WebGL enabled to rotate the room.</p></div>
+            <div id="hotspots" class="hotspots" aria-label="Scene findings"><button class="hotspot physical" data-finding="collision" aria-label="Inspect finding 1: Object collision"><span>1</span></button><button class="hotspot visual" data-finding="scale" aria-label="Inspect finding 2: Scale mismatch"><span>2</span></button><button class="hotspot human" data-finding="access" aria-label="Inspect finding 3: Blocked access"><span>3</span></button></div>
+            <div id="camera-label" class="camera-label"><svg viewBox="0 0 20 16" aria-hidden="true"><path d="M2 4h10v10H2zM12 7l6-3v10l-6-3M5 4V2h4v2"/></svg><span>GREP camera</span></div>
+            <div class="scene-caption"><span id="scene-version-label">Original arrangement</span><span id="scene-hint">Drag to orbit · Scroll to zoom</span></div>
+          </div>
+          <div class="scene-bottom"><div class="view-buttons" aria-label="Camera views"><button id="overview-btn" class="active" aria-pressed="true"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m10 2 7 4v8l-7 4-7-4V6l7-4Zm-7 4 7 4 7-4M10 10v8"/></svg>Perspective</button><button id="top-btn" aria-pressed="false"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3h14v14H3zM3 8h14M8 8v9"/></svg>Top view</button><button id="reset-btn" aria-label="Reset camera"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a7 7 0 1 1 0 6M4 2v5h5"/></svg>Reset</button></div><button id="annotations-btn" class="annotation-toggle" aria-pressed="true">Annotations <span class="switch-track"></span></button></div>
+        </div>
+        <aside class="finding-panel" aria-label="Evaluation findings"><div class="panel-heading"><h3>Follow the evidence</h3><span id="finding-count">3 illustrative findings</span></div>
+          <div class="finding-list" role="group" aria-label="Choose a finding">
+            <button class="finding-row physical selected" data-finding="collision" aria-pressed="true"><span class="finding-number">01</span><span><small>PHYSICAL VALIDITY</small><strong>Object collision</strong></span><span class="finding-arrow" aria-hidden="true">↗</span></button>
+            <button class="finding-row visual" data-finding="scale" aria-pressed="false"><span class="finding-number">02</span><span><small>VISUAL COHERENCE</small><strong>Scale mismatch</strong></span><span class="finding-arrow" aria-hidden="true">↗</span></button>
+            <button class="finding-row human" data-finding="access" aria-pressed="false"><span class="finding-number">03</span><span><small>HUMAN-USE LOGIC</small><strong>Blocked access</strong></span><span class="finding-arrow" aria-hidden="true">↗</span></button>
+          </div>
+          <div class="evidence-detail" id="evidence-detail" aria-live="polite"><div class="evidence-image"><canvas id="evidence-canvas" aria-label="Close-up of the selected finding"></canvas><span id="evidence-label">01 / CLOSE-UP</span></div><div class="detail-kicker"><span id="detail-category">Physical validity</span><span id="detail-status" class="issue-status">Illustrative issue</span></div><h4 id="detail-title">Two objects, one occupied space.</h4><p id="detail-description">The coffee table intersects the armchair. Inspect the highlighted contact area, then compare the adjusted arrangement.</p><button id="focus-btn" class="text-button">Acquire another view <span aria-hidden="true">↗</span></button></div>
+        </aside>
+      </div>
+      <div class="demo-footnote"><p>A staged inspection illustrating GREP’s three principles. Findings and camera choices are pre-authored.</p><a href="./asset-credits.html">Scene asset credits ↗</a></div>
+    </section>
+
+    <section class="abstract-section narrow-width" id="abstract"><span class="eyebrow">THE IDEA</span><h2>Beyond a plausible first impression.</h2><p>Generated rooms can appear convincing while containing collisions, inconsistent object scales, or furniture that cannot be used as intended. GREP evaluates room layouts through physical validity, visual coherence, and human-use logic, connecting findings to the objects, relationships, and visual evidence behind them.</p><p class="secondary-copy">The goal is an interpretable evaluation: what went wrong, where it happened, and why it matters.</p></section>
+    <section class="principles page-width" aria-labelledby="principles-title"><div class="section-top"><div><span class="eyebrow">THREE COMPLEMENTARY VIEWS</span><h2 id="principles-title">Grounded in principles.</h2></div></div><div class="principle-grid">
+      <article class="principle physical"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="m20 4 14 8v16l-14 8-14-8V12l14-8ZM6 12l14 8 14-8M20 20v16"/></svg><h3>Physical validity</h3><p class="metric-names">Collision · Support · Bounds</p><p>Can the objects occupy their positions and remain physically supported?</p></article>
+      <article class="principle visual"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 7h30v26H5zM5 28l9-10 8 8 6-5 7 8"/><circle cx="27" cy="14" r="3"/></svg><h3>Visual coherence</h3><p class="metric-names">Scale · Style · Pairing</p><p>Do the selected objects form a visually coherent room?</p></article>
+      <article class="principle human"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="15" cy="12" r="6"/><path d="M4 34v-5a11 11 0 0 1 22 0v5H4M28 7a6 6 0 0 1 0 12M30 23a9 9 0 0 1 6 9v2h-6"/></svg><h3>Human-use logic</h3><p class="metric-names">Function · Placement</p><p>Can people access and use the objects in the intended setting?</p></article>
+    </div></section>
+    <section class="method page-width" id="method"><span class="eyebrow">FROM A SCENE TO AN EXPLANATION</span><h2>How GREP evaluates a room.</h2><div class="method-grid"><article><span>01</span><h3>Scene</h3><p>Start with the room, its objects, and their spatial relationships.</p></article><article><span>02</span><h3>Checks</h3><p>Instantiate relevant checks from the fixed evaluation types.</p></article><article><span>03</span><h3>Evidence</h3><p>Examine geometric measurements and targeted visual observations.</p></article><article><span>04</span><h3>Report</h3><p>Connect metric results to inspectable, localized findings.</p></article></div></section>
+    <section class="explore page-width"><div><span class="eyebrow">EXPLORE THE RESEARCH</span><h2>From this example to real cases.</h2><p>Inspect the captured evaluation examples and results.</p></div><div class="explore-links"><a href="./scene_liveboard.html?scope=open-space">Browse examples <span>↗</span></a><a href="./leaderboard.html?scope=open-space">View leaderboard <span>↗</span></a></div></section>
+  </main>
+  <footer class="page-width"><a class="brand" href="./">GREP</a><p>Grounding Generated Room Evaluation in Principles</p><a href="https://github.com/Han-808/GREP" target="_blank" rel="noopener">Code ↗</a></footer>
+  <noscript><p class="noscript">Enable JavaScript to explore the interactive scene. The research overview remains available above.</p></noscript>
+</body></html>

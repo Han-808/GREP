@@ -88,8 +88,15 @@ downloads/
 !/tools/sceneeval_hy4_runner_v050/data/**
 !/tools/api3_anthropic_runner_v2/README.md
 
-# Website source and display data are distributed as Release assets.
+# Local authoring workspace; the deployable project-page/ is versioned separately.
 /website/
+!/project-page-source/README.md
+
+# Published render images are restored from the checksum-pinned Release asset.
+/project-page/scene/
+/project-page/anthropic-scene/
+/project-page/multi-room-scene/
+/project-page/multi-room-room/
 
 # Combined website and score datasets are Release attachments.
 /data/

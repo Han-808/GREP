@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Examples · GREP</title>
+  <link rel="stylesheet" href="./assets/public-board-shared.css">
+  <link rel="stylesheet" href="./assets/examples.css">
+</head><body class="examples-page">
+<script src="./assets/public-board-policy.js"></script>
+<header class="topbar"><a class="brand" href="./">GREP</a><nav class="site-navigation" aria-label="Main navigation"></nav></header>
+<section class="page-intro"><p class="eyebrow">GREP / Examples</p><h1>From scenes to evidence.</h1><p>Explore generated scenes in a rectangular, wall-free setting, alongside their grounded evaluations.</p></section>
+  <section class="board-hierarchy" aria-label="Example benchmarks"><nav id="board-kind" aria-label="Benchmark type"></nav><nav id="floorplan-level" class="floorplan-level" aria-label="Model benchmarks"></nav><p id="hierarchy-context" class="hierarchy-context"></p></section>
+<div class="board-page">
+  <div class="collection-meta"><span>Single-room · rectangular, wall-free</span><span id="updated">Loading examples…</span></div>
+  <div class="compact-selectors" aria-label="Choose an example">
+    <label>Model<select id="model-select-mobile" aria-label="Model"></select></label>
+    <label>Scene<select id="scene-select-mobile" aria-label="Scene"></select></label>
+
+  </div>
+  <div class="example-workspace">
+    <aside class="example-sidebar" aria-label="Browse examples">
+      <label class="sidebar-label" for="model-select">Model</label><select id="model-select" aria-label="Model"></select>
+      <div class="sidebar-section"><h2>Scenes</h2><span id="summary"></span></div>
+      <div class="scene-list" id="scene-list" aria-label="Scenes"></div>
+    </aside>
+    <main class="main" id="main"><div class="empty">Loading the selected example…</div></main>
+  </div>
+</div>
+<script>
+    const selection = new URLSearchParams(location.search);
+    let data = null;
+    let selectedDataset = selection.get('dataset') || selection.get('model') || "anthropic_fable5";
+    let selectedCase = selection.get('scene') || selection.get('case') || null;
+    let deductionsOpen = false;
+
+    const $ = id => document.getElementById(id);
+    function legacyDisplayLabel(item, scope) {
+      return scope === "open-space" && item.key === "hy3_aw" && !/\blegacy\b/i.test(item.label)
+        ? `${item.label} · legacy` : item.label;
+    }
+
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]);
+    const fmt = value => value == null ? "—" : Number(value).toFixed(1);
+    const liveScore = scene => scene.liveboard_score ?? scene.score;
+    const liveL1 = scene => scene.liveboard_l1_score ?? scene.l1_score;
+    const liveMetrics = scene => scene.liveboard_metrics || scene.metrics || {};
+    const fmtInt = value => new Intl.NumberFormat("en-US").format(Number(value || 0));
+    const fmtTokens = value => {
+      const n = Number(value || 0);
+      return n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(0)}k` : `${n}`;
+    };
+    const actionablePartial = scene => scene.acceptance_status === "accepted_partial_coverage" || (scene.score_status === "partial_coverage" && Number(scene.coverage || 0) <= 90);
+    const tag = scene => actionablePartial(scene) ? "partial" : scene.status === "complete" && scene.score != null ? "tested" : scene.status === "failed" ? "failed" : "pending";
+    const coverage = scene => scene.coverage == null ? "—" : `${Number(scene.coverage).toFixed(0)}%`;
+    const tone = value => value == null ? "#aeb7bc" : value >= 80 ? "#267b72" : value >= 65 ? "#8a7755" : "#a3655e";
+    const labelize = value => String(value || 'Scene').replaceAll('_', ' ');
+    const metricNames = {
+      collision: "Collision", oob: "Out of bounds", support: "Support",
+      scale_consistency: "Scale Consistency", object_pairing_consistency: "Object Pairing Consistency",
+      style_consistency: "Style Consistency", functional_consistency: "Functional Consistency",
+      semantic_placement_consistency: "Semantic Placement Consistency"
+    };
+    const scoreCategories = [
+      {id: "physical", label: "Physical Plausibility", metrics: ["collision", "oob", "support"], aggregate: ["collision", "oob", "support"]},
+      {id: "spatial", label: "Functional Semantics", metrics: ["functional_consistency", "semantic_placement_consistency"], aggregate: ["functional_consistency", "semantic_placement_consistency"]},
+      {id: "visual", label: "Visual Coherence", metrics: ["style_consistency", "scale_consistency", "object_pairing_consistency"], aggregate: ["style_consistency", "scale_consistency", "object_pairing_consistency"]}
+    ];
+    const casePrompts = {
+      S100: {brief: "brief_00", text: "Generate a coherent multi-zone living, dining, and reading room. Aim for functional orientations, usable circulation, and a naturally organized scene."},
+      S101: {brief: "brief_01", text: "Generate a coherent kitchen, dining, and utility room. Aim for sensible work areas, functional object relationships, accessible storage, and clear circulation."},
+      S102: {brief: "brief_02", text: "Generate a coherent office, library, and meeting room. Aim for usable workstations, accessible storage, functional seating relationships, and clear circulation."},
+      S103: {brief: "brief_03", text: "Generate a coherent bedroom, dressing, and workspace. Aim for usable furniture orientation, accessible storage, sensible support relationships, and clear circulation."},
+      S104: {brief: "brief_04", text: "Generate a coherent media, music, game, and recreation room. Aim for functional activity zones, sensible viewing and interaction relationships, accessible equipment, and clear circulation."},
+      S105: {brief: "brief_05", text: "Generate a coherent children's study, play, and art room. Aim for usable activity zones, sensible object relationships, accessible storage, and clear circulation."},
+      S106: {brief: "brief_06", text: "Generate a coherent bathroom, laundry, and linen utility room. Aim for usable fixtures and appliances, accessible operating sides, sensible support and storage relationships, and clear circulation."},
+      S107: {brief: "brief_07", text: "Generate a coherent workshop, repair, and storage room. Aim for usable workstations, accessible tools and storage, safe operating clearances, and clear circulation."},
+      S108: {brief: "brief_08", text: "Generate a coherent café-style reading, conversation, and coworking lounge. Aim for functional seating and table relationships, accessible shared resources, and clear circulation."},
+      S109: {brief: "brief_09", text: "Generate a coherent home fitness, yoga, recovery, and hobby room. Aim for usable activity zones, safe operating clearances, accessible equipment, and clear circulation."}
+    };
+    const activeText = scene => {
+      const latest = scene.latest || {};
+      return latest.call_type || [latest.phase, latest.metric, latest.group_id].filter(Boolean).join(" · ") || latest.event || "No activity recorded";
+    };
+
+    function dataset() {
+      return data.datasets.find(item => item.key === selectedDataset) || data.datasets[0];
+    }
+
+    function renderTabs() {
+      selectedDataset = dataset().key;
+      const options = data.datasets.map(item => `<option value="${esc(item.key)}">${esc(item.label)}</option>`).join('');
+      ['model-select', 'model-select-mobile'].forEach(id => {
+        $(id).innerHTML = options;
+        $(id).value = selectedDataset;
+        $(id).onchange = () => { selectedDataset = $(id).value; selectedCase = null; deductionsOpen = false; render(); };
+      });
+    }
+
+    function renderSidebar() {
+      const current = dataset();
+      $("summary").textContent = current.scenes.length;
+      if (!current.scenes.some(scene => scene.case_id === selectedCase)) {
+        selectedCase = current.scenes[0]?.case_id || null;
+      }
+      $("scene-list").innerHTML = current.scenes.map(scene => {
+        const image = scene.image_url ? `<img src="${esc(scene.image_url)}" alt="" loading="lazy">` : "—";
+        return `<button class="scene-card ${scene.case_id === selectedCase ? "active" : ""}" aria-pressed="${scene.case_id === selectedCase}" data-case="${scene.case_id}"><span class="scene-media">${image}</span><span class="scene-copy"><strong>${scene.case_id}<i class="score-chip">${fmt(liveScore(scene))}</i></strong><small class="scene-line">${esc(labelize(scene.scene_type))}</small></span></button>`;
+      }).join("");
+      $("scene-list").querySelectorAll("button").forEach(button => button.onclick = () => {
+        selectedCase = button.dataset.case;
+        deductionsOpen = false;
+        renderSidebar();
+        renderDetail();
+      });
+      $('scene-select-mobile').innerHTML = current.scenes.map(scene => `<option value="${esc(scene.case_id)}">${esc(scene.case_id)} · ${esc(labelize(scene.scene_type))}</option>`).join('');
+      $('scene-select-mobile').value = selectedCase;
+      $('scene-select-mobile').onchange = () => { selectedCase = $('scene-select-mobile').value; deductionsOpen = false; renderSidebar(); renderDetail(); };
+    }
+
+    function metricRows(scene) {
+      const displayedMetrics = liveMetrics(scene);
+      const average = ids => {
+        const values = ids.map(id => displayedMetrics[id]).filter(value => value != null).map(Number);
+        return values.length === ids.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+      };
+      const categories = scoreCategories.map(category => {
+        const categoryScore = category.id === "physical" ? liveL1(scene) : category.id === "spatial" ? scene.liveboard_spatial_reasoning ?? average(category.aggregate) : scene.liveboard_visual_coherence ?? average(category.aggregate);
+        const items = category.metrics.map(id => {
+          const score = displayedMetrics[id];
+          const label = metricNames[id] || id;
+          return `<div class="metric"><span class="metric-name">${esc(label)}</span><div class="track"><div class="fill" style="width:${score == null ? 0 : Math.max(0, Math.min(100, score))}%;background:${tone(score)}"></div></div><span class="metric-score ${score == null ? "na" : ""}">${fmt(score)}</span></div>`;
+        }).join("");
+        const scope = category.id === "spatial" ? "Functional Consistency + Semantic Placement Consistency" : category.id === "visual" ? "Style Consistency + Scale Consistency + Object Pairing Consistency" : "Collision + Out of Bounds + Support";
+        return `<section class="metric-category"><div class="metric-category-head"><strong>${esc(category.label)}</strong><small>${esc(scope)}</small><b style="color:${tone(categoryScore)}">${fmt(categoryScore)}</b></div><div class="metric-category-body">${items}</div></section>`;
+      }).join("");
+      return `<div class="metric-categories">${categories}</div>`;
+    }
+
+    function deductionRows(scene) {
+      const rows = Array.isArray(scene.deductions) ? scene.deductions : [];
+      const metrics = liveMetrics(scene);
+      const activeRows = rows.filter(row => Number.isFinite(metrics[row.metric]) && metrics[row.metric] < 100 - 1e-6);
+      const objects = [...new Set(activeRows.flatMap(row => Array.isArray(row.object_ids) ? row.object_ids : []))].sort();
+      const content = objects.length
+        ? `<ul class="deduction-objects">${objects.map(id => `<li><code>${esc(id)}</code></li>`).join("")}</ul>`
+        : `<p class="deduction-empty">${liveScore(scene) === 100 ? 'No deducted objects.' : 'Object details unavailable.'}</p>`;
+      return `<details class="deduction-menu" ${deductionsOpen ? "open" : ""}><summary><span>Deducted objects</span></summary><div class="deduction-menu-body">${content}</div></details>`;
+    }
+
+    function renderDetail() {
+      const current = dataset();
+      const scene = current.scenes.find(item => item.case_id === selectedCase);
+      if (!scene) {
+        $("main").innerHTML = `<div class="empty"><div><h2>No scene selected</h2><p>Select a case from the scene list.</p></div></div>`;
+        return;
+      }
+      const index = current.scenes.indexOf(scene) + 1;
+      const prompt = casePrompts[scene.case_id];
+      const promptBlock = prompt ? `<details class="scene-prompt"><summary>Generation brief</summary><p>${esc(prompt.text)}</p></details>` : "";
+      const render = scene.image_url ? `<img src="${esc(scene.image_url)}" alt="${esc(legacyDisplayLabel(current, "open-space"))} ${scene.case_id} global render">` : `<div class="viewer-empty"><strong>Render unavailable</strong><br>The source dataset image is not present on disk.</div>`;
+      const notes = [];
+      if (scene.status === "failed") notes.push("No benchmark score.");
+      if (current.lifecycle === "legacy") notes.push("Legacy historical result · excluded from current cohort");
+      const caveat = notes.length ? `<div class="provenance">${notes.map(esc).join(" · ")}</div>` : "";
+      $("main").innerHTML = `<div class="hero-head"><div><p class="scene-kicker">${esc(current.label)} <span> / </span> ${scene.case_id}</p><h2>${esc(labelize(scene.scene_type))}</h2><div class="hero-sub">${scene.object_count == null ? "" : `${scene.object_count} objects · `}Single-room, wall-free</div></div><span class="case-position">${index} / ${current.scenes.length}</span></div>
+        <div class="layout"><div class="visual-column"><section class="scene-figure"><div class="viewer">${render}</div><div class="viewer-foot"><span>Global view · standardized perspective</span>${scene.image_url ? `<a href="${esc(scene.image_url)}" target="_blank" rel="noopener">Open full image ↗</a>` : ''}</div></section>${promptBlock}</div>
+        <section class="score-panel" aria-label="Scene evaluation"><div class="score-top"><div class="score-copy"><p class="eyebrow">Evaluation</p><h3>Overall score</h3></div><div class="overall-score"><strong>${fmt(liveScore(scene))}</strong><span>/ 100</span></div></div>
+        ${metricRows(scene)}
+        ${deductionRows(scene)}
+        ${caveat}</section></div>`;
+      const url = new URL(location.href);
+      url.searchParams.set('scope', 'open-space'); url.searchParams.set('dataset', current.key); url.searchParams.set('scene', scene.case_id);
+      ['model', 'case', 'layout', 'room', 'condition', 'group'].forEach(key => url.searchParams.delete(key));
+      history.replaceState(null, '', url);
+      const deductionMenu = $("main").querySelector(".deduction-menu");
+      if (deductionMenu) deductionMenu.ontoggle = () => { deductionsOpen = deductionMenu.open; };
+    }
+
+    function render() {
+      if (!data) return;
+      renderTabs();
+      renderSidebar();
+      renderDetail();
+      $("updated").textContent = `${data.datasets.length} models · ${data.datasets.reduce((sum, item) => sum + item.scenes.length, 0)} scenes`;
+    }
+
+    async function load() {
+      try {
+        const response = await fetch("./status.json", {cache: "no-store"});
+        if (!response.ok) throw new Error(`status ${response.status}`);
+        data = await response.json();
+        render();
+      } catch (error) {
+        $("main").insertAdjacentHTML("afterbegin", `<div class="error">Live update failed: ${esc(error.message)}</div>`);
+      }
+    }
+    addEventListener("keydown", event => {
+      if (!data || !["ArrowLeft", "ArrowRight"].includes(event.key) || /^(SELECT|INPUT|TEXTAREA|BUTTON|SUMMARY)$/.test(event.target.tagName) || event.target.isContentEditable) return;
+      const scenes = dataset().scenes;
+      let index = scenes.findIndex(scene => scene.case_id === selectedCase);
+      index = (index + (event.key === "ArrowRight" ? 1 : -1) + scenes.length) % scenes.length;
+      selectedCase = scenes[index]?.case_id || null;
+      deductionsOpen = false;
+      render();
+    });
+    load();
+  </script>
+<script src="./assets/public-board-navigation.js"></script>
+</body></html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Examples · GREP</title>
+  <link rel="stylesheet" href="./assets/public-board-shared.css">
+  <link rel="stylesheet" href="./assets/examples.css">
+</head><body class="examples-page">
+<script src="./assets/public-board-policy.js"></script>
+<header class="topbar"><a class="brand" href="./">GREP</a><nav class="site-navigation" aria-label="Main navigation"></nav></header>
+<section class="page-intro"><p class="eyebrow">GREP / Examples</p><h1>From scenes to evidence.</h1><p>Explore assembled layouts, then inspect the individual rooms and their evaluations.</p></section>
+  <section class="board-hierarchy" aria-label="Example benchmarks"><nav id="board-kind" aria-label="Benchmark type"></nav><nav id="floorplan-level" class="floorplan-level" aria-label="Model benchmarks"></nav><p id="hierarchy-context" class="hierarchy-context"></p></section>
+<div class="board-page">
+  <div class="collection-meta"><span>Multi-room · layout and room views</span><span id="updated">Loading examples…</span></div>
+  <div class="compact-selectors" aria-label="Choose an example">
+    <label>Model<select id="model-select-mobile" aria-label="Model"></select></label>
+    <label>Layout<select id="scene-select-mobile" aria-label="Layout"></select></label>
+    <label class="room-selector-label">View<select id="room-select-mobile" aria-label="Room or whole layout"></select></label>
+  </div>
+  <div class="example-workspace">
+    <aside class="example-sidebar" aria-label="Browse examples">
+      <label class="sidebar-label" for="model-select">Model</label><select id="model-select" aria-label="Model"></select>
+      <div class="sidebar-section"><h2>Layouts</h2><span id="summary"></span></div>
+      <div class="layout-list" id="layout-list" aria-label="Layouts"></div>
+    </aside>
+    <main class="main" id="main"><div class="empty">Loading the selected example…</div></main>
+  </div>
+</div>
+<script>
+    const selection = new URLSearchParams(location.search);
+    let data=null, selectedDataset=selection.get('dataset')||selection.get('model'), selectedLayout=selection.get('layout')||selection.get('scene'), selectedRoom=selection.get('room');
+    const $=id=>document.getElementById(id);
+    const language="en";
+    const zh={
+      "Generation + evaluation":"生成与评测","Loading scenes…":"正在加载场景…","layouts":"布局","scored":"已评分","average":"均分","rooms":"房间","objects":"对象","Evaluated":"已评测","Generation complete":"生成完成","Layout global view":"布局全局视图","assembled multi-room scene":"多房间组合场景","Room-level global views":"房间级全局视图","Select a room to inspect its evaluation.":"点击房间查看单房评测。","Layout score":"布局得分","Room score":"房间得分","overall score":"总分","Physical Plausibility":"物理合理性","Functional Semantics":"功能与语义布局","Visual Coherence":"视觉一致性","Metric scores":"指标得分","Collision":"碰撞","Out of bounds":"越界","Collision + Out of bounds":"碰撞 + 越界","Support":"支撑","Functional Consistency":"功能一致性","Semantic Placement Consistency":"语义摆放一致性","Style Consistency":"风格一致性","Scale Consistency":"尺度一致性","Object Pairing Consistency":"对象搭配一致性","Physical metrics":"物理指标","Function + Placement":"功能 + 摆放","Style + Scale + Pairing":"风格 + 尺度 + 搭配","Original findings":"原始判定记录","No attributed deductions.":"没有可归因的扣分。","Evaluation not available for this generation.":"该生成结果尚无评测。","Input net-area weighted room aggregate. Global architecture and cross-room interactions are not scored.":"按固定输入房间净面积加权汇总；不评估全局架构与跨房间交互。","Score uses the independent room evaluation; image shows the generation room with physical walls.":"分数来自独立房间评测；图片展示带物理墙体的 generation 房间。","Back to layout":"返回布局","Room":"房间","Layout":"布局","Coverage":"覆盖率","Weight":"权重","Generation-only model":"仅生成模型","evaluated models":"个已评测模型","scored layouts":"个已评分布局","scored rooms":"个已评分房间","Multi-room index failed to load":"多房间索引加载失败"
+    };
+    const t=value=>language==="zh"?(zh[value]||value):value;
+    const esc=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]);
+    const fmt=value=>value==null?"—":Number(value).toFixed(2);
+    const labelize=value=>String(value||"").replaceAll("_"," ").replace(/\b\w/g,char=>char.toUpperCase());
+    const tone=value=>value==null?"#aeb7bc":value>=80?"#267b72":value>=65?"#8a7755":"#a3655e";
+    const dataset=()=>data.datasets.find(item=>item.key===selectedDataset)||data.datasets[0];
+    const layout=()=>dataset().layouts.find(item=>item.scene_id===selectedLayout||item.layout_id===selectedLayout)||dataset().layouts[0];
+    const isEvaluated=row=>row?.status==="evaluated";
+    const stateLabel=row=>isEvaluated(row)?t("Evaluated"):t("Generation complete");
+    const stateClass=row=>isEvaluated(row)?"evaluated":"generation";
+
+    const metricGroups=[
+      {label:"Physical Plausibility",note:"Physical metrics",category:"physical",metrics:[["collision","Collision"],["oob","Out of bounds"],["support","Support"]]},
+      {label:"Functional Semantics",note:"Function + Placement",category:"functional_semantics",metrics:[["functional_consistency","Functional Consistency"],["semantic_placement_consistency","Semantic Placement Consistency"]]},
+      {label:"Visual Coherence",note:"Style + Scale + Pairing",category:"visual_coherence",metrics:[["style_consistency","Style Consistency"],["scale_consistency","Scale Consistency"],["object_pairing_consistency","Object Pairing Consistency"]]}
+    ];
+
+    function renderTabs(){
+      selectedDataset=dataset().key;
+      const options=data.datasets.map(item=>`<option value="${esc(item.key)}">${esc(item.label)}</option>`).join('');
+      ['model-select','model-select-mobile'].forEach(id=>{
+        $(id).innerHTML=options;$(id).value=selectedDataset;
+        $(id).onchange=()=>{selectedDataset=$(id).value;selectedLayout=null;selectedRoom=null;render()};
+      });
+    }
+
+    function renderSidebar(){
+      const current=dataset();
+      selectedLayout=layout()?.scene_id||null;
+      $("summary").textContent=current.layouts.length;
+      $("layout-list").innerHTML=current.layouts.map(row=>`<button class="layout-card ${row.scene_id===selectedLayout?"active":""}" aria-pressed="${row.scene_id===selectedLayout}" data-layout="${esc(row.scene_id)}"><span class="layout-thumb"><img src="${esc(row.scene_image_url)}" alt="" loading="lazy"></span><span class="layout-copy"><strong>${esc(labelize(row.layout_id))}<i class="score-chip">${fmt(row.score)}</i></strong><small>${row.room_count} ${t("rooms")} · ${row.object_count} ${t("objects")}</small></span></button>`).join("");
+      $("layout-list").querySelectorAll("button").forEach(button=>button.onclick=()=>{selectedLayout=button.dataset.layout;selectedRoom=null;renderSidebar();renderDetail()});
+      $('scene-select-mobile').innerHTML=current.layouts.map(row=>`<option value="${esc(row.scene_id)}">${esc(labelize(row.layout_id))} · ${row.room_count} rooms</option>`).join('');
+      $('scene-select-mobile').value=selectedLayout;
+      $('scene-select-mobile').onchange=()=>{selectedLayout=$('scene-select-mobile').value;selectedRoom=null;renderSidebar();renderDetail()};
+    }
+
+    function metricPanel(row){
+      const metrics=row.metrics||{};
+      return `<div class="metric-categories">${metricGroups.map(group=>`<section class="metric-category"><div class="metric-category-head"><strong>${t(group.label)}</strong><small>${t(group.note)}</small><b style="color:${tone(row[group.category])}">${fmt(row[group.category])}</b></div><div class="metric-category-body">${group.metrics.map(([id,label])=>`<div class="metric"><span class="metric-name">${t(label)}</span><div class="track"><div class="fill" style="width:${metrics[id]==null?0:Math.max(0,Math.min(100,metrics[id]))}%;background:${tone(metrics[id])}"></div></div><span class="metric-score">${fmt(metrics[id])}</span></div>`).join("")}</div></section>`).join("")}</div>`;
+    }
+
+    function coverageFact(row){return "";}
+
+    function scorePanel(row,scope){
+      return `<section class="score-panel" aria-label="${scope==='layout'?'Layout':'Room'} evaluation"><div class="score-top"><div class="score-copy"><p class="eyebrow">Evaluation</p><h3>${scope==='layout'?'Layout':'Room'} score</h3></div><div class="overall-score"><strong>${fmt(row.score)}</strong><span>/ 100</span></div></div>${metricPanel(row)}${scope==='room'?deductionPanel(row):''}${row.score==null?`<p class="provenance">${t("Evaluation not available for this generation.")}</p>`:''}</section>`;
+    }
+
+    function deductionPanel(room){
+      const rows=Array.isArray(room.deductions)?room.deductions:[];
+      const metrics=room.metrics||{};
+      const activeRows=rows.filter(row=>Number.isFinite(metrics[row.metric])&&metrics[row.metric]<100-1e-6);
+      const objects=[...new Set(activeRows.flatMap(row=>Array.isArray(row.object_ids)?row.object_ids:[]))].sort();
+      const content=objects.length?`<ul class="deduction-objects">${objects.map(id=>`<li><code>${esc(id)}</code></li>`).join('')}</ul>`:`<p class="deduction-empty">${room.score===100?'No deducted objects.':'Object details unavailable.'}</p>`;
+      return `<details class="deduction-menu"><summary><span>Deducted objects</span></summary><div class="deduction-menu-body">${content}</div></details>`;
+    }
+
+    function renderLayoutDetail(current,row){
+      const index=current.layouts.indexOf(row)+1;
+      const rooms=row.rooms.map(room=>`<button class="room-tile" data-room="${esc(room.room_key)}"><img src="${esc(room.image_url)}" alt="${esc(labelize(room.scene_type))} from ${esc(current.label)} ${esc(row.layout_id)}" loading="lazy"><span class="room-tile-copy"><strong>${esc(labelize(room.scene_type))}<i class="score-chip">${fmt(room.score)}</i></strong><small>${esc(room.room_id)} · ${room.object_count} objects</small></span></button>`).join('');
+      $("main").innerHTML=`<div class="hero-head"><div><p class="scene-kicker">${esc(current.label)} <span> / </span> ${esc(row.layout_id)}</p><h2>${esc(labelize(row.aggregate_shape||row.layout_id))}</h2><div class="hero-sub">${row.room_count} rooms · ${row.object_count} objects · Assembled layout</div></div><span class="case-position">${index} / ${current.layouts.length}</span></div><div class="content-layout"><div class="visual-column"><section class="scene-figure"><div class="viewer"><img src="${esc(row.scene_image_url)}" alt="${esc(current.label)} ${esc(row.layout_id)} layout global view"></div><div class="viewer-foot"><span>Layout global view · standardized perspective</span><a href="${esc(row.scene_image_url)}" target="_blank" rel="noopener">Open full image ↗</a></div></section><div class="room-section-head"><h3>Inside this layout</h3><p>Select a room to inspect its evaluation.</p></div><div class="room-grid">${rooms}</div></div>${scorePanel(row,'layout')}</div>`;
+      $("main").querySelectorAll('.room-tile').forEach(button=>button.onclick=()=>{selectedRoom=button.dataset.room;renderDetail();$('main').scrollIntoView({block:'start',behavior:'smooth'})});
+    }
+
+    function renderRoomDetail(current,row,room){
+      $("main").innerHTML=`<button class="back-button" id="back-layout">← Back to layout</button><div class="hero-head"><div><p class="scene-kicker">${esc(current.label)} <span> / </span> ${esc(row.layout_id)} <span> / </span> ${esc(room.room_id)}</p><h2>${esc(labelize(room.scene_type))}</h2><div class="hero-sub">${room.object_count} objects · Room ${room.order_index+1} of ${row.room_count}</div></div></div><div class="content-layout"><div class="visual-column"><section class="scene-figure"><div class="viewer"><img src="${esc(room.image_url)}" alt="${esc(current.label)} ${esc(row.layout_id)} ${esc(room.room_id)}"></div><div class="viewer-foot"><span>Room view · standardized perspective</span><a href="${esc(room.image_url)}" target="_blank" rel="noopener">Open full image ↗</a></div></section></div>${scorePanel(room,'room')}</div>`;
+      $("back-layout").onclick=()=>{selectedRoom=null;renderDetail()};
+    }
+
+    function renderDetail(){
+      const current=dataset(),row=layout();if(!row)return;
+      const room=selectedRoom?row.rooms.find(item=>item.room_key===selectedRoom||item.room_id===selectedRoom):null;
+      selectedRoom=room?.room_key||null;
+      if(room)renderRoomDetail(current,row,room);else renderLayoutDetail(current,row);
+      $('room-select-mobile').innerHTML='<option value="">Whole layout</option>'+row.rooms.map(item=>`<option value="${esc(item.room_key)}">${esc(labelize(item.scene_type))} · ${esc(item.room_id)}</option>`).join('');
+      $('room-select-mobile').value=selectedRoom||'';
+      $('room-select-mobile').onchange=()=>{selectedRoom=$('room-select-mobile').value||null;renderDetail()};
+      const url=new URL(location.href);
+      url.searchParams.set('scope','multi-room');url.searchParams.set('dataset',current.key);url.searchParams.set('layout',row.layout_id);
+      if(room)url.searchParams.set('room',room.room_key);else url.searchParams.delete('room');
+      ['model','scene','case','condition','group'].forEach(key=>url.searchParams.delete(key));history.replaceState(null,'',url);
+    }
+    function render(){if(!data)return;renderTabs();renderSidebar();renderDetail();$("updated").textContent=`${data.datasets.length} models · ${data.counts.layouts} layouts · ${data.reporting_counts?.scored_rooms??data.counts.scored_rooms} scored rooms`}
+    async function load(){try{const response=await fetch("./multi_room_sceneboard.json",{cache:"no-store"});if(!response.ok)throw new Error(`status ${response.status}`);data=await response.json();data.datasets.forEach(item=>{if(!Array.isArray(item.layouts))item.layouts=Array.isArray(item.scenes)?item.scenes:[]});selectedDataset||=data.datasets[0]?.key||null;render()}catch(error){$("main").innerHTML=`<div class="error">${t("Multi-room index failed to load")}: ${esc(error.message)}</div>`}}
+    addEventListener("keydown",event=>{if(!data||selectedRoom||!["ArrowLeft","ArrowRight"].includes(event.key)||/^(SELECT|INPUT|TEXTAREA|BUTTON|SUMMARY)$/.test(event.target.tagName)||event.target.isContentEditable)return;const layouts=dataset().layouts;let index=layouts.findIndex(item=>item.scene_id===selectedLayout);index=(index+(event.key==="ArrowRight"?1:-1)+layouts.length)%layouts.length;selectedLayout=layouts[index]?.scene_id||null;render()});
+    load();
+  </script>
+<script src="./assets/public-board-navigation.js"></script>
+</body></html>
