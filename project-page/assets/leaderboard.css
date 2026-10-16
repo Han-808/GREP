@@ -1,7 +1,5 @@
 .leaderboard-page { max-width: 1340px; margin: 0 auto; padding: 0 28px 90px; color: var(--ink, #20242b); }
-.leaderboard-page .page-intro { padding: 46px 0 26px; }
-.leaderboard-page .page-intro h1 { margin: 0 0 10px; font-size: clamp(32px, 4vw, 42px); font-weight: 620; line-height: 1.15; letter-spacing: -.04em; }
-.leaderboard-page .page-intro p { max-width: 740px; margin: 0; color: var(--muted, #69717e); font-size: 15px; line-height: 1.7; }
+.leaderboard-page .page-intro { padding: 49px 0 21px; }
 .leaderboard-page .board-hierarchy { margin: 0 0 29px; padding-inline: 0; }
 .leaderboard-page .board-hierarchy::after { left: 0; right: 0; }
 .leaderboard-page .board-context { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px 20px; margin: 0 0 31px; color: var(--muted); font-size: 13px; }
@@ -33,6 +31,8 @@
 .ranking-row { min-height: 69px; padding: 17px 15px; font-size: 14px; }
 .ranking-entry + .ranking-entry { border-top: 1px solid var(--line); }
 .ranking-entry:hover { background: #fafcfb; }
+.ranking-entry.selected-model { background: #f0f7f5; box-shadow: inset 3px 0 0 var(--accent); }
+.ranking-entry.selected-model .model-name { color: var(--accent); font-weight: 650; }
 .rank { color: #7f8893; font-size: 12px; font-variant-numeric: tabular-nums; }
 .model-cell { min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
 .model-name { color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 530; line-height: 1.5; }
@@ -70,6 +70,8 @@
 .protocol-profile { overflow-wrap: anywhere; }
 .tier-policy { margin: 17px 0 0; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.7; }
 .tier-policy strong { color: var(--ink); font-weight: 550; }
+.tier-policy a { color: var(--accent); }
+.tier-policy a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .overall-chart { padding-bottom: 18px; }
 .overall-chart-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 18px; }
 .overall-chart-head h3 { margin: 0; font-size: 14px; font-weight: 550; }
@@ -99,8 +101,7 @@
 }
 @media (max-width: 680px) {
   .leaderboard-page { padding: 0 20px 55px; }
-  .leaderboard-page .page-intro { padding: 32px 0 22px; }
-  .leaderboard-page .page-intro p { font-size: 14px; }
+  .leaderboard-page .page-intro { padding: 33px 0 14px; }
   .leaderboard-page .board-context { margin-bottom: 25px; gap: 6px 14px; font-size: 12px; }
   .board-context a { margin-left: 0; }
   .table-header, .ranking-row { grid-template-columns: 176px 73px repeat(3, 132px) 62px; min-width: 778px; padding: 14px 10px; gap: 13px; }

@@ -1,0 +1,15 @@
+{
+  "source": "paper/GREP.pdf",
+  "source_sha256": "f6decf8c90c264c39528fba2788845b4a11bc99c63c4b900fcff82683690b458",
+  "page": 4,
+  "figure": 2,
+  "form_xobject": "/Im2",
+  "bounding_box_pt": [
+    0,
+    0,
+    396,
+    192
+  ],
+  "extraction": "Original PDF Form XObject, without relabeling or redrawing.",
+  "web_render": "Poppler pdftoppm, 450 dpi, PNG"
+}

@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "data_kind": "paper_table1_model_averages",
+  "source": {
+    "pdf": "paper/GREP.pdf",
+    "sha256": "f6decf8c90c264c39528fba2788845b4a11bc99c63c4b900fcff82683690b458",
+    "score_table": 1,
+    "score_page": 6,
+    "count_page": 18,
+    "count_line_numbers": [
+      960,
+      961,
+      962
+    ]
+  },
+  "leaderboard_views": [
+    {
+      "id": "open-space",
+      "label": "Single-room · wall-free",
+      "count_unit": "scenes",
+      "models": [
+        {
+          "key": "gpt6_astra_high",
+          "label": "GPT-6 Astra",
+          "overall": 84.5,
+          "submetric_scores": {
+            "plausibility": 85.0,
+            "visual_coherence": 88.4,
+            "spatial_reasoning": 83.4
+          },
+          "scored_case_count": 20
+        },
+        {
+          "key": "gpt56sol",
+          "label": "GPT-5.6 Sol",
+          "overall": 73.7,
+          "submetric_scores": {
+            "plausibility": 81.0,
+            "visual_coherence": 84.8,
+            "spatial_reasoning": 66.4
+          },
+          "scored_case_count": 20
+        },
+        {
+          "key": "anthropic_opus5",
+          "label": "Claude Opus 5",
+          "overall": 81.5,
+          "submetric_scores": {
+            "plausibility": 90.3,
+            "visual_coherence": 95.3,
+            "spatial_reasoning": 72.4
+          },
+          "scored_case_count": 20
+        },
+        {
+          "key": "anthropic_fable5",
+          "label": "Claude Fable 5",
+          "overall": 77.9,
+          "submetric_scores": {
+            "plausibility": 77.8,
+            "visual_coherence": 95.1,
+            "spatial_reasoning": 74.8
+          },
+          "scored_case_count": 20
+        },
+        {
+          "key": "anthropic_sonnet5",
+          "label": "Claude Sonnet 5",
+          "overall": 65.3,
+          "submetric_scores": {
+            "plausibility": 72.4,
+            "visual_coherence": 87.0,
+            "spatial_reasoning": 56.0
+          },
+          "scored_case_count": 20
+        },
+        {
+          "key": "kimi_k3",
+          "label": "Kimi K3",
+          "overall": 73.2,
+          "submetric_scores": {
+            "plausibility": 70.2,
+            "visual_coherence": 91.2,
+            "spatial_reasoning": 72.0
+          },
+          "scored_case_count": 20
+        },
+        {
+          "key": "glm53",
+          "label": "GLM-5.3",
+          "overall": 70.8,
+          "submetric_scores": {
+            "plausibility": 67.2,
+            "visual_coherence": 90.2,
+            "spatial_reasoning": 69.7
+          },
+          "scored_case_count": 20
+        },
+        {
+          "key": "hy4_preview",
+          "label": "HY4 Preview",
+          "overall": 61.8,
+          "submetric_scores": {
+            "plausibility": 55.9,
+            "visual_coherence": 86.8,
+            "spatial_reasoning": 61.4
+          },
+          "scored_case_count": 20
+        }
+      ]
+    },
+    {
+      "id": "multi-room",
+      "label": "Multi-room",
+      "count_unit": "layouts",
+      "models": [
+        {
+          "key": "gpt6_astra_high",
+          "label": "GPT-6 Astra",
+          "overall": 81.2,
+          "submetric_scores": {
+            "plausibility": 80.2,
+            "visual_coherence": 86.9,
+            "spatial_reasoning": 80.9
+          },
+          "scored_case_count": 10
+        },
+        {
+          "key": "gpt-5.6-sol",
+          "label": "GPT-5.6 Sol",
+          "overall": 73.4,
+          "submetric_scores": {
+            "plausibility": 73.8,
+            "visual_coherence": 89.9,
+            "spatial_reasoning": 69.9
+          },
+          "scored_case_count": 10
+        },
+        {
+          "key": "claude-opus-5-aihub",
+          "label": "Claude Opus 5",
+          "overall": 69.5,
+          "submetric_scores": {
+            "plausibility": 79.4,
+            "visual_coherence": 94.0,
+            "spatial_reasoning": 57.6
+          },
+          "scored_case_count": 10
+        },
+        {
+          "key": "claude-fable-5-aihub",
+          "label": "Claude Fable 5",
+          "overall": 72.5,
+          "submetric_scores": {
+            "plausibility": 79.2,
+            "visual_coherence": 91.5,
+            "spatial_reasoning": 64.0
+          },
+          "scored_case_count": 10
+        },
+        {
+          "key": "claude-sonnet-5-aihub",
+          "label": "Claude Sonnet 5",
+          "overall": 65.7,
+          "submetric_scores": {
+            "plausibility": 73.5,
+            "visual_coherence": 96.7,
+            "spatial_reasoning": 54.0
+          },
+          "scored_case_count": 10
+        },
+        {
+          "key": "kimi-k3",
+          "label": "Kimi K3",
+          "overall": 66.6,
+          "submetric_scores": {
+            "plausibility": 75.4,
+            "visual_coherence": 92.9,
+            "spatial_reasoning": 55.1
+          },
+          "scored_case_count": 10
+        },
+        {
+          "key": "glm-5.3",
+          "label": "GLM-5.3",
+          "overall": 68.7,
+          "submetric_scores": {
+            "plausibility": 72.0,
+            "visual_coherence": 89.5,
+            "spatial_reasoning": 62.4
+          },
+          "scored_case_count": 10
+        },
+        {
+          "key": "hy4-preview-tokenhub",
+          "label": "HY4 Preview",
+          "overall": 54.2,
+          "submetric_scores": {
+            "plausibility": 54.0,
+            "visual_coherence": 87.5,
+            "spatial_reasoning": 47.9
+          },
+          "scored_case_count": 9
+        }
+      ]
+    }
+  ]
+}

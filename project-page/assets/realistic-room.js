@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from './vendor/addons/loaders/GLTFLoader.js';
 import { HDRLoader } from './vendor/addons/loaders/HDRLoader.js';
 import { RoundedBoxGeometry } from './vendor/RoundedBoxGeometry.js';
+import { doorClearance, doorSwingLimit } from './cabinet-door-geometry.js?v=dff24e64116f';
 
 /** Real glTF furniture, local PBR textures, and the original room layout. */
 export async function buildRealisticRoom(scene, renderer, onProgress) {
@@ -81,8 +82,31 @@ export async function buildRealisticRoom(scene, renderer, onProgress) {
   const table=object('table',.15,.25,1.35,'x');table.userData.finding='collision';
   const shelf=object('shelf',-2.98,-1.65,2.12,'y',Math.PI/2);
   shelf.traverse(part=>{if(part.isMesh){const old=part.material;part.material=wood.clone();part.material.aoMap=old.aoMap;part.material.aoMapIntensity=.8;part.material.color=new THREE.Color('#b4a08b');}});
-  const cabinet=object('cabinet',2.97,1.55,1.85,'x',-Math.PI/2);cabinet.userData.finding='access';
-  cabinet.children[0].scale.y*=1.35;
+  // A working cabinet: the single door has a real hinge, visible interior, and
+  // a finite opening sweep. Its front faces the room (world -x).
+  const cabinet=baseGroup();cabinet.position.set(2.97,0,1.55);cabinet.rotation.y=-Math.PI/2;
+  cabinet.name='Hinged storage cabinet';cabinet.userData.finding='access';
+  const cabinetTop=1.12;
+  box(cabinet,1.12,.045,.51,0,cabinetTop-.0225,0,wood,.004);
+  box(cabinet,1.12,.045,.51,0,.145,0,wood,.004);
+  for(const x of [-.54,.54])box(cabinet,.04,.93,.50,x,.625,0,wood,.003);
+  box(cabinet,1.04,.93,.025,0,.625,-.235,darkWood,.002);
+  for(const y of [.46,.78])box(cabinet,1.04,.025,.45,0,y,-.018,wood,.002);
+  for(const x of [-.46,.46])for(const z of [-.17,.17]){
+    cylinder(cabinet,.024,.021,.13,x,.068,z,steel,16);
+  }
+  const doorHinge=new THREE.Group();cabinet.add(doorHinge);doorHinge.position.set(-.515,0,.265);
+  const doorWidth=1.03,doorThickness=.035;
+  // The slab has flat sides so the collision section matches the visible panel.
+  mesh(doorHinge,new THREE.BoxGeometry(doorWidth,.92,doorThickness),wood,doorWidth/2,.625,0);
+  const insetWood=wood.clone();insetWood.color=new THREE.Color('#bba184');
+  box(doorHinge,.91,.80,.008,doorWidth/2,.625,.0205,insetWood,.003);
+  for(const y of [.28,.96]){
+    cylinder(cabinet,.014,.014,.09,-.515,y,.265,bronze,20);
+    box(doorHinge,.045,.075,.004,.025,y,.020,bronze,.002);
+  }
+  for(const y of [.55,.70])box(doorHinge,.022,.016,.040,.91,y,.040,bronze,.003);
+  box(doorHinge,.024,.184,.026,.91,.625,.067,bronze,.005);
   const tvConsole=object('cabinet',-2.97,1.03,2.06,'x',Math.PI/2);
   const tvGroup=baseGroup();tvGroup.position.set(-2.97,0,1.03);tvGroup.rotation.y=Math.PI/2;
   box(tvGroup,1.66,.95,.045,0,1.13,-.03,steel,.016);
@@ -103,7 +127,6 @@ export async function buildRealisticRoom(scene, renderer, onProgress) {
   const display=box(desk,.515,.305,.004,.24,1.015,-.145,'#43525c',.005);display.rotation.x=-.15;
   const lamp=object('lamp',1.65,-2.05,.62,'y',0,.84);lamp.userData.finding='scale';lamp.scale.setScalar(2.65);
   const side=object('side',-2.6,-.1,.58,'y');
-  const cabinetTop=.68*1.85/2.44*1.35;
 
   function book(parent,x,y,z,w=.3,d=.22,h=.035,color='#4b5453',angle=0){
     const b=new THREE.Group();parent.add(b);b.position.set(x,y,z);b.rotation.y=angle;
@@ -128,8 +151,15 @@ export async function buildRealisticRoom(scene, renderer, onProgress) {
   cylinder(desk,.045,.04,.11,.66,.89,-.27,'#85735a');
   for(let i=0;i<5;i++){const pen=cylinder(desk,.003,.003,.18,.66+(i%3-.8)*.012,1.01,-.27+(i%2)*.012,i%2?'#282b2b':'#a4875e',8);pen.rotation.z=(i-2)*.06;}
   cup(side,0,.59,0,1);book(side,-.08,.58,.02,.22,.17,.025,'#57483a',.2);
-  book(cabinet,-.4,cabinetTop,.04,.3,.23,.04,'#5c655b');book(cabinet,-.38,cabinetTop+.045,.03,.29,.22,.027,'#b7a58c',.15);
-  vase(cabinet,.5,cabinetTop,0,.22);
+  book(cabinet,-.24,cabinetTop,.02,.3,.23,.04,'#5c655b');book(cabinet,-.22,cabinetTop+.045,.02,.29,.22,.027,'#b7a58c',.15);
+  vase(cabinet,.32,cabinetTop,0,.22);
+  // Stored objects make the cabinet's intended use readable once the door opens.
+  book(cabinet,-.22,.474,-.035,.34,.25,.045,'#675343');
+  book(cabinet,-.20,.523,-.035,.31,.23,.035,'#a49781',.04);
+  box(cabinet,.34,.20,.30,.25,.27,-.04,cloth,.012);
+  box(cabinet,.33,.035,.29,.25,.383,-.04,'#afa08c',.008);
+  cup(cabinet,.24,.796,-.05,.85);
+  vase(cabinet,-.23,.794,-.06,.24);
   const coverColors=['#343e40','#765344','#858573','#b6a78a','#4f5d5b','#8d7860','#c8b9a0'];
   for(let row=0;row<4;row++){
     const y=.12+row*.49;
@@ -142,13 +172,67 @@ export async function buildRealisticRoom(scene, renderer, onProgress) {
     if(row%2===0)vase(shelf,.43,y,.03,.21);
     else{book(shelf,.4,y,.02,.27,.2,.035,'#695646');book(shelf,.39,y+.04,.02,.24,.19,.028,'#586065',.04);}
   }
-  const ottoman=baseGroup();ottoman.position.set(2,0,1.57);ottoman.userData.finding='access';
+  const ottoman=baseGroup();ottoman.position.set(2.10,0,1.64);ottoman.userData.finding='access';
   const poufMat=new THREE.MeshStandardMaterial({map:linen,color:'#aa9b89',roughness:.95,bumpMap:linen,bumpScale:.002});
   const pouf=mesh(ottoman,new THREE.SphereGeometry(1,48,24),poufMat,0,.31,0);pouf.scale.set(.43,.32,.43);
   for(let i=0;i<8;i++){
     const a=i*Math.PI/4,pts=[];for(let j=0;j<25;j++){const t=j/24*Math.PI;pts.push(new THREE.Vector3(.432*Math.sin(t)*Math.cos(a),.31+.322*Math.cos(t),.432*Math.sin(t)*Math.sin(a)));}
     ottoman.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:'#c1a991',transparent:true,opacity:.5})));
   }
+  // The intended sweep and actual opening share the same hinge and door width.
+  const doorGuide=new THREE.Group();cabinet.add(doorGuide);doorGuide.visible=false;
+  const guidePoints=[];
+  for(let i=0;i<=48;i++){
+    const angle=i/48*Math.PI/2;
+    guidePoints.push(new THREE.Vector3(-.515+doorWidth*Math.cos(angle),.032,.265+doorWidth*Math.sin(angle)));
+  }
+  const intendedArc=new THREE.Line(new THREE.BufferGeometry().setFromPoints(guidePoints),new THREE.LineDashedMaterial({color:'#718d90',dashSize:.055,gapSize:.035,transparent:true,opacity:.75}));
+  intendedArc.computeLineDistances();doorGuide.add(intendedArc);
+  const currentArc=new THREE.Line(new THREE.BufferGeometry().setFromPoints(guidePoints),new THREE.LineBasicMaterial({color:'#087f86',transparent:true,opacity:.95}));doorGuide.add(currentArc);
+  const limitMarker=mesh(doorGuide,new THREE.SphereGeometry(.028,16,12),new THREE.MeshBasicMaterial({color:'#bc6448'}));
+  let requestedProgress=0;
+  let mechanismState={};
+  const localObstacle=new THREE.Vector3(),obstacleScale=new THREE.Vector3();
+  const cabinetMechanism={
+    setOpenProgress(progress){
+      requestedProgress=THREE.MathUtils.clamp(Number(progress)||0,0,1);
+      cabinet.updateWorldMatrix(true,true);ottoman.updateWorldMatrix(true,true);
+      pouf.getWorldPosition(localObstacle);cabinet.worldToLocal(localObstacle);
+      pouf.getWorldScale(obstacleScale);
+      // Each moving part intersects a different horizontal section of the pouf.
+      // The handle must not collide with an imaginary full-height cylinder.
+      const part=(minX,maxX,minZ,maxZ,minY,maxY)=>{
+        const yDistance=Math.max(minY-localObstacle.y,localObstacle.y-maxY,0);
+        const section=Math.sqrt(Math.max(0,1-(yDistance/obstacleScale.y)**2));
+        return {minX,maxX,minZ,maxZ,radius:section>0?Math.max(obstacleScale.x,obstacleScale.z)*section:null};
+      };
+      const spec={hinge:{x:-.515,z:.265},obstacle:{x:localObstacle.x,z:localObstacle.z,radius:.43},parts:[
+        part(0,doorWidth,-doorThickness/2,doorThickness/2,.165,1.085),
+        part(.06,.97,.0165,.0245,.225,1.025),
+        part(.898,.922,.054,.080,.533,.717),
+        part(.899,.921,.020,.060,.542,.558),
+        part(.899,.921,.020,.060,.692,.708),
+      ]};
+      const maxAngle=doorSwingLimit(spec);
+      const requestedAngle=requestedProgress*Math.PI/2,angle=Math.min(requestedAngle,maxAngle);
+      doorHinge.rotation.y=-angle;
+      const contact=doorClearance(angle,spec);
+      const blocked=requestedAngle>maxAngle+1e-5;
+      const arcPositions=currentArc.geometry.attributes.position;
+      for(let i=0;i<=48;i++){
+        const t=i/48*angle;
+        arcPositions.setXYZ(i,-.515+doorWidth*Math.cos(t),.034,.265+doorWidth*Math.sin(t));
+      }
+      arcPositions.needsUpdate=true;currentArc.geometry.computeBoundingSphere();
+      currentArc.material.color.set(blocked?'#bc6448':'#087f86');
+      limitMarker.position.set(contact.x,.036,contact.z);limitMarker.visible=blocked;
+      mechanismState={requestedAngleDeg:THREE.MathUtils.radToDeg(requestedAngle),angleDeg:THREE.MathUtils.radToDeg(angle),maxAngleDeg:THREE.MathUtils.radToDeg(maxAngle),blocked,clearance:contact.clearance,closedClearance:doorClearance(0,spec).clearance};
+      return {...mechanismState};
+    },
+    getState(){return this.setOpenProgress(requestedProgress);},
+    setGuideVisible(visible){doorGuide.visible=Boolean(visible);},
+  };
+  cabinetMechanism.setOpenProgress(0);
   const bench=baseGroup();bench.position.set(.05,0,2.25);
   box(bench,1.28,.07,.45,0,.34,0,wood,.008);for(const x of [-.52,.52])for(const z of [-.16,.16])box(bench,.025,.3,.025,x,.17,z,steel,.002);
   book(bench,-.32,.38,0,.29,.22,.03,'#4a5756',.08);book(bench,-.3,.415,0,.26,.2,.025,'#b8a386',.03);
@@ -171,5 +255,5 @@ export async function buildRealisticRoom(scene, renderer, onProgress) {
   const dashes=new THREE.InstancedMesh(dashGeometry,dashMaterial,50);
   for(let i=0;i<50;i++){const a=samples[i*2],b=samples[i*2+1],q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize());dashes.setMatrixAt(i,new THREE.Matrix4().compose(a.clone().add(b).multiplyScalar(.5),q,new THREE.Vector3(1,a.distanceTo(b),1)));}
   route.add(dashes);
-  return {chair,table,lamp,cabinet,ottoman,rig,route};
+  return {chair,table,lamp,cabinet,ottoman,rig,route,cabinetMechanism};
 }

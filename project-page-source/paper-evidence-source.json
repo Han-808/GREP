@@ -1,0 +1,117 @@
+{
+  "source": "paper/GREP.pdf",
+  "source_sha256": "f6decf8c90c264c39528fba2788845b4a11bc99c63c4b900fcff82683690b458",
+  "page": 1,
+  "figure": 1,
+  "form_xobject": "/Im1",
+  "bounding_box_pt": [
+    0,
+    0,
+    396,
+    498.95999
+  ],
+  "full_vector_figure": "assets/figures/grep-figure1.pdf",
+  "extraction": "Original PDF Form XObject, clipped to rectangular panel bounds without relabeling, redrawing, or raster retouching.",
+  "web_render": "Poppler pdftoppm, PNG; 600 dpi for the three principle crops and 300 dpi for the wider proactive-evidence panel.",
+  "interpretation": "As explained in the original Figure 1 caption, check and cross marks indicate whether each evaluator output matches the actual scene state, not whether the scene passes.",
+  "panels": [
+    {
+      "id": "grep-evidence-physical",
+      "original_content": "A: sofa–rug compression and table–rug penetration",
+      "crop_top_left_pt": [
+        225,
+        39,
+        391,
+        158
+      ],
+      "crop_pdf_coordinates_pt": [
+        225,
+        340.95999,
+        391,
+        459.95999
+      ],
+      "pdf": "assets/figures/grep-evidence-physical.pdf",
+      "png": "assets/figures/grep-evidence-physical.png",
+      "render_dpi": 600,
+      "width": 1384,
+      "height": 992,
+      "png_sha256": "9a640b211fa6b2fe50c5262fe67ca3cc3f7d542441dd045100dc7d3113145ada"
+    },
+    {
+      "id": "grep-evidence-visual",
+      "original_content": "B: 1.8 m-long shoes",
+      "crop_top_left_pt": [
+        6,
+        167,
+        197,
+        341
+      ],
+      "crop_pdf_coordinates_pt": [
+        6,
+        157.95999,
+        197,
+        331.95999
+      ],
+      "pdf": "assets/figures/grep-evidence-visual.pdf",
+      "png": "assets/figures/grep-evidence-visual.png",
+      "render_dpi": 600,
+      "width": 1592,
+      "height": 1450,
+      "png_sha256": "3b4fd8ec381297d4ff80ed2eefbac59ce219973fdcefcbad57f12f22dd0c7a27"
+    },
+    {
+      "id": "grep-evidence-human-use",
+      "original_content": "C: unlisted face-to-face chairs, 0.16 m apart",
+      "crop_top_left_pt": [
+        199,
+        167,
+        390,
+        341
+      ],
+      "crop_pdf_coordinates_pt": [
+        199,
+        157.95999,
+        390,
+        331.95999
+      ],
+      "pdf": "assets/figures/grep-evidence-human-use.pdf",
+      "png": "assets/figures/grep-evidence-human-use.png",
+      "render_dpi": 600,
+      "width": 1592,
+      "height": 1450,
+      "png_sha256": "0016747d6595d989650b441047d03e3337caa8dea720ec38fc18fe6642cb9709"
+    },
+    {
+      "id": "grep-evidence-proactive",
+      "original_content": "Additional views: desk–chair group, measured angle 173°",
+      "crop_top_left_pt": [
+        6,
+        344,
+        390,
+        493
+      ],
+      "crop_pdf_coordinates_pt": [
+        6,
+        5.959990000000005,
+        390,
+        154.95999
+      ],
+      "pdf": "assets/figures/grep-evidence-proactive.pdf",
+      "png": "assets/figures/grep-evidence-proactive.png",
+      "render_dpi": 300,
+      "width": 1600,
+      "height": 621,
+      "png_sha256": "682e342c7f0742267df31c0133114b6bcb3d71a7fb11db2dc456d06b03f4d27c"
+    }
+  ],
+  "full_figure_render": {
+    "pdf": "assets/figures/grep-figure1.pdf",
+    "pdf_sha256": "595823b486de80f18903d57b40039074855914e58f5851691ca90cb4ad62b91d",
+    "png": "assets/figures/grep-figure1.png",
+    "render": "Poppler pdftoppm -png -singlefile -r 450; full existing Figure 1 Form XObject extraction, with no cropping, relabeling, redrawing, or raster retouching.",
+    "render_dpi": 450,
+    "width": 2475,
+    "height": 3119,
+    "png_sha256": "bf3399beb446043548605b41929968214a135d465cab9b1c7febf806897c459c"
+  }
+}

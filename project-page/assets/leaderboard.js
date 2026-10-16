@@ -1,30 +1,32 @@
 const $ = id => document.getElementById(id);
     const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]);
-    const fmt = (value, digits=(activeBoard === "open-space" ? 1 : 2)) => value == null ? "—" : Number(value).toFixed(digits);
+    const fmt = (value, digits=1) => value == null ? "—" : Number(value).toFixed(digits);
     const metricGroups = [
-      {id:"plausibility", label:"Physical Plausibility", fine:["collision","oob","support"]},
-      {id:"spatial_reasoning", label:"Functional Semantics", fine:["functional_consistency","semantic_placement_consistency"]},
-      {id:"visual_coherence", label:"Visual Coherence", fine:["style_consistency","scale_consistency","object_pairing_consistency"]}
+      {id:"plausibility", label:"Physical Validity", fine:["collision","support","oob"], weight:38, weights:[15,15,8]},
+      {id:"visual_coherence", label:"Visual Coherence", fine:["scale_consistency","style_consistency","object_pairing_consistency"], weight:10, weights:[3,3,4]},
+      {id:"spatial_reasoning", label:"Human-Use", fine:["functional_consistency","semantic_placement_consistency"], weight:52, weights:[32,20]}
     ];
+    const metricLabels = {collision:"Collision",support:"Support",oob:"Out-of-bounds",scale_consistency:"Scale",style_consistency:"Style",object_pairing_consistency:"Pairing",functional_consistency:"Function",semantic_placement_consistency:"Placement"};
     const viewState = {view:"overall", category:"plausibility", fine:"collision"};
     let leaderboardData = null;
     let leaderboardRoot = null;
+    let paperLeaderboardRoot = null;
     const allowedBoards=new Set(window.GREP_PUBLIC_BOARDS.scopes.map(item => item.id));
     const requestedBoard=new URLSearchParams(location.search).get("scope");
+    const selectedModel=new URLSearchParams(location.search).get("dataset") || new URLSearchParams(location.search).get("model");
     let activeBoard=allowedBoards.has(requestedBoard)?requestedBoard:"open-space";
 
-    const categoryMeta = id => leaderboardData?.submetrics?.find(item => item.id === id) || metricGroups.find(item => item.id === id);
-    const fineMeta = id => leaderboardData?.fine_metrics?.find(item => item.id === id);
+    const categoryMeta = id => metricGroups.find(item => item.id === id) || leaderboardData?.submetrics?.find(item => item.id === id);
+    const fineMeta = id => ({...leaderboardData?.fine_metrics?.find(item => item.id === id),id,label:metricLabels[id] || id});
     const scoreValue = model => viewState.view === "overall" ? model.overall : viewState.view === "category" ? model.submetric_scores?.[viewState.category] : model.fine_metric_scores?.[viewState.fine];
-    const selectedMeta = () => viewState.view === "overall" ? {label:"Overall", description:"Scores range from 0 to 100; higher is better."} : viewState.view === "category" ? {...categoryMeta(viewState.category),description:""} : {...fineMeta(viewState.fine),description:""};
+    const selectedMeta = () => viewState.view === "overall" ? {label:"Overall", description:"0–100 · Higher is better"} : viewState.view === "category" ? {...categoryMeta(viewState.category),description:""} : {...fineMeta(viewState.fine),description:""};
 
     function scoreCell(value, kind="") {
-      const digits = activeBoard !== "open-space" || kind === "overall" ? 2 : 1;
-      return `<div class="score-cell ${kind}" role="cell"><strong>${fmt(value, digits)}</strong></div>`;
+      return `<div class="score-cell ${kind}" role="cell"><strong>${fmt(value)}</strong></div>`;
     }
 
     function caseCount(model) {
-      const value = activeBoard === "open-space" ? model.scored_case_count : model.completed;
+      const value = viewState.view === "fine" ? model.available_case_count : model.scored_case_count;
       return Number.isInteger(value) && value >= 0 ? value : "—";
     }
 
@@ -32,10 +34,7 @@ const $ = id => document.getElementById(id);
       return `./scene_liveboard.html?scope=${encodeURIComponent(activeBoard)}&dataset=${encodeURIComponent(model.key)}`;
     }
 
-    function legacyDisplayLabel(item, scope) {
-      return scope === "open-space" && item.key === "hy3_aw" && !/\blegacy\b/i.test(item.label)
-        ? `${item.label} · legacy` : item.label;
-    }
+    function legacyDisplayLabel(item) { return window.grepModelLabel(item); }
 
     function modelNote(model) {
       return model.key === "anthropic_opus48" ? `<span class="model-note">non-thinking</span>` : "";
@@ -44,11 +43,10 @@ const $ = id => document.getElementById(id);
     function renderScoringSummary() {
       const method = leaderboardData.methodology || {};
       const profile = leaderboardData.scoring_profile || {};
-      const descriptions = {plausibility:"Collision, Support and Out of Bounds",spatial_reasoning:"Function and Placement",visual_coherence:"Scale, Style and Pairing"};
       const aggregation = activeBoard === "open-space"
-        ? "Per-model averages over the scored scene results. The table reports the scored case count for each model."
-        : method.aggregation_policy || "Fixed input net-area-weighted rooms within each layout; equal weight across layouts.";
-      $("scoring-summary").innerHTML = `<div class="summary-formula"><strong>${esc(method.overall_formula || "Scores use the source reporting profile.")}</strong><span>${esc(profile.metric_formula || method.score_mapping || "")}</span></div><div class="summary-categories">${leaderboardData.metrics.map(metric => `<div class="summary-category"><strong>${esc(metric.label)}</strong><span>${esc(descriptions[metric.id] || metric.label)}</span><span>${esc(metric.description || "")}</span></div>`).join("")}</div><div class="protocol-notes"><p><strong>Aggregation.</strong> ${esc(aggregation)}</p></div>`;
+        ? "Each scored scene has equal weight in its model average. Main averages and sample counts follow Table 1. Metric averages use the available case exports."
+        : "A layout enters the ranking when every required room has a score. Room scores are weighted by net floor area within each layout, and ranked layouts have equal weight in the model average.";
+      $("scoring-summary").innerHTML = `<div class="summary-formula"><strong>Overall = 38% Physical Validity + 10% Visual Coherence + 52% Human-Use</strong><span>${esc(profile.metric_formula || method.score_mapping || "")}</span></div><div class="summary-categories">${metricGroups.map(group => `<div class="summary-category"><strong>${esc(group.label)} · ${group.weight}%</strong><span>${group.fine.map((id,index) => `${esc(metricLabels[id])} ${group.weights[index]}%`).join(" · ")}</span></div>`).join("")}</div><div class="protocol-notes"><p><strong>Principle scores.</strong> Each principle is the weighted average of its metrics, normalized by that principle’s total weight.</p><p><strong>Aggregation.</strong> ${esc(aggregation)}</p></div>`;
     }
 
     function renderMetricOptions() {
@@ -81,10 +79,14 @@ const $ = id => document.getElementById(id);
       const board = $("ranking-board");
       board.dataset.view = viewState.view === "overall" ? "overall" : "metric";
       $("ranking-title").textContent = viewState.view === "overall" ? "Overall ranking" : `${meta?.label || "Metric"} ranking`;
-      $("ranking-description").textContent = meta?.description || "Models are reranked by the selected metric.";
+      $("ranking-description").textContent = viewState.view === "fine" ? "Available-case avg. · 0–100" : "Paper avg. · 0–100";
+      $("paper-table-reference").hidden = viewState.view === "fine";
+      const countLabel = viewState.view === "fine"
+        ? (activeBoard === "open-space" ? "Available scenes" : "Available layouts")
+        : (activeBoard === "open-space" ? "Scored scenes" : "Scored layouts");
       $("ranking-header").innerHTML = viewState.view === "overall"
-        ? `<span role="columnheader">Rank</span><span role="columnheader">Model</span><span class="overall-heading" role="columnheader">Overall ↑</span>${metricGroups.map(group => `<span class="category-heading" role="columnheader">${esc(group.label)}</span>`).join("")}<span role="columnheader">${activeBoard === "open-space" ? "Scored scenes" : "Layouts"}</span>`
-        : `<span role="columnheader">Rank</span><span role="columnheader">Model</span><span role="columnheader">${esc(meta?.label || "Score")} ↑</span><span role="columnheader">${activeBoard === "open-space" ? "Scored scenes" : "Layouts"}</span>`;
+        ? `<span role="columnheader">Rank</span><span role="columnheader">Model</span><span class="overall-heading" role="columnheader">Avg. Overall ↑</span>${metricGroups.map(group => `<span class="category-heading" role="columnheader">Avg. ${esc(group.label)}</span>`).join("")}<span role="columnheader">${countLabel}</span>`
+        : `<span role="columnheader">Rank</span><span role="columnheader">Model</span><span role="columnheader">Avg. ${esc(meta?.label || "Score")} ↑</span><span role="columnheader">${countLabel}</span>`;
     }
 
     function renderRows() {
@@ -96,7 +98,7 @@ const $ = id => document.getElementById(id);
       $("rows").innerHTML = ranked.map((model, index) => {
         const rowClass = viewState.view === "overall" ? "overall-view" : "metric-view";
         const values = viewState.view === "overall" ? `${scoreCell(model.overall, "overall")}${metricGroups.map(group => scoreCell(model.submetric_scores?.[group.id], "category-score")).join("")}` : scoreCell(model.selectedScore, viewState.view === "overall" ? "overall" : "");
-        return `<div class="ranking-entry ${index === 0 ? "winner" : ""}" role="rowgroup"><div class="ranking-row ${rowClass}" role="row"><span class="rank" role="cell">${String(index + 1).padStart(2, "0")}</span><div class="model-cell" role="cell"><a class="model-name" href="${exampleLink(model)}" aria-label="Browse ${esc(legacyDisplayLabel(model, activeBoard))} examples">${esc(legacyDisplayLabel(model, activeBoard))}<span class="model-link-arrow" aria-hidden="true">↗</span></a>${modelNote(model)}</div>${values}<span class="case-count" role="cell">${caseCount(model)}</span></div></div>`;
+        return `<div class="ranking-entry ${index === 0 && model.selectedScore != null ? "winner" : ""} ${model.key === selectedModel ? "selected-model" : ""}" data-model="${esc(model.key)}" role="rowgroup"><div class="ranking-row ${rowClass}" role="row"><span class="rank" role="cell">${model.selectedScore == null ? "—" : String(index + 1).padStart(2, "0")}</span><div class="model-cell" role="cell"><a class="model-name" href="${exampleLink(model)}" aria-label="Browse ${esc(legacyDisplayLabel(model, activeBoard))} examples">${esc(legacyDisplayLabel(model, activeBoard))}<span class="model-link-arrow" aria-hidden="true">↗</span></a>${modelNote(model)}</div>${values}<span class="case-count" role="cell">${caseCount(model)}</span></div></div>`;
       }).join("");
       $("ranking-board").setAttribute("aria-rowcount", String(ranked.length + 1));
       renderOverallChart();
@@ -177,10 +179,10 @@ const $ = id => document.getElementById(id);
         const score = Number(model.overall), x = left + step * (index + .5), y = scaleY(score);
         const label = String(legacyDisplayLabel(model, activeBoard) || model.key || "Model");
         const tspans = labels[index].map((line, lineIndex) => `<tspan x="${x}" dy="${lineIndex ? 19 : 0}">${esc(line)}</tspan>`).join("");
-        const title = `${label} · ${fmt(score, 2)}`;
-        return `<g class="chart-point${index === 0 ? " chart-point-leader" : ""}" tabindex="0" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><line class="chart-stem" x1="${x}" y1="${y}" x2="${x}" y2="${baseline}"></line><circle class="chart-halo" cx="${x}" cy="${y}" r="12"></circle><circle class="chart-dot" cx="${x}" cy="${y}" r="5.5"></circle><text class="chart-value" x="${x}" y="${y - 21}" text-anchor="middle">${fmt(score, 2)}</text><text class="chart-model-label" x="${x}" y="${baseline + 30}" text-anchor="middle">${tspans}</text></g>`;
+        const title = `${label} · ${fmt(score)}`;
+        return `<g class="chart-point${index === 0 ? " chart-point-leader" : ""}" tabindex="0" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title><line class="chart-stem" x1="${x}" y1="${y}" x2="${x}" y2="${baseline}"></line><circle class="chart-halo" cx="${x}" cy="${y}" r="12"></circle><circle class="chart-dot" cx="${x}" cy="${y}" r="5.5"></circle><text class="chart-value" x="${x}" y="${y - 21}" text-anchor="middle">${fmt(score)}</text><text class="chart-model-label" x="${x}" y="${baseline + 30}" text-anchor="middle">${tspans}</text></g>`;
       }).join("");
-      const summary = `${axisNote}. ${domain.min}–${domain.max}. ` + ranked.map(model => `${legacyDisplayLabel(model, activeBoard)}: ${fmt(model.overall, 2)}`).join("; ");
+      const summary = `${axisNote}. ${domain.min}–${domain.max}. ` + ranked.map(model => `${legacyDisplayLabel(model, activeBoard)}: ${fmt(model.overall)}`).join("; ");
       $("overall-chart-range").textContent = `${zh ? "显示区间" : "Range"} ${domain.min}–${domain.max}`;
       $("overall-chart-note").textContent = axisNote;
       canvas.innerHTML = `<svg class="overall-chart-svg" style="min-width:${width}px;height:${height}px" viewBox="0 0 ${width} ${height}" role="group" aria-label="${esc(summary)}"><title>${esc(summary)}</title>${grid}${points}</svg>`;
@@ -191,27 +193,35 @@ const $ = id => document.getElementById(id);
 
     function renderBenchmarkTabs() {
       const boards=leaderboardRoot?.leaderboard_views||[];
-      const board=boards.find(item=>item.id===activeBoard)||boards[0]||leaderboardRoot;
+      const available=boards.find(item=>item.id===activeBoard)||boards[0]||leaderboardRoot;
+      const paper=paperLeaderboardRoot?.leaderboard_views?.find(item=>item.id===available.id);
+      if (!paper) throw new Error("Paper averages unavailable for this setting.");
+      const board={...available, ...paper, models:paper.models.map(model=>{
+        const cases=available.models.find(item=>item.key===model.key);
+        return {...model, fine_metric_scores:cases?.fine_metric_scores || {}, available_case_count:cases ? (cases.scored_case_count ?? cases.completed ?? 0) : 0};
+      })};
       leaderboardData=board;
       activeBoard=board.id||activeBoard;
+      const missingAstra=activeBoard==='multi-room'&&selectedModel==='gpt6_astra_high'&&!board.models.some(model=>model.key===selectedModel);
+      $("missing-model").hidden=!missingAstra;
+      $("missing-model").innerHTML=missingAstra?'<strong>GPT-6 Astra</strong> · Multi-room results are not included in the current dataset. <a href="./leaderboard.html?scope=open-space&dataset=gpt6_astra_high">View open-space results →</a>':'';
       $("benchmark-tabs").querySelectorAll("button").forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.board===activeBoard)));
       $("benchmark-note").textContent="";
-      $("board-subtitle").textContent = activeBoard === "open-space"
-        ? "Single-room generation, evaluated for physical plausibility, visual coherence, and human use."
-        : "Multi-room generation, evaluated across the rooms and layouts of each model.";
-      $("scope-name").textContent = activeBoard === "open-space" ? "Single-room · wall-free" : "Multi-room";
+      $("board-subtitle").textContent = "Scene generation models evaluated by GREP.";
+      $("scope-name").textContent = activeBoard === "open-space" ? "Wall-free single rooms" : "Regular multi-room layouts";
       $("coverage-note").textContent = board.coverage_note || "";
       $("browse-examples").href = `./scene_liveboard.html?scope=${activeBoard}`;
       $("caption-examples").href = `./scene_liveboard.html?scope=${activeBoard}`;
       $("table-caption-scope").textContent = activeBoard === "open-space"
         ? "Scored scenes are reported per model."
         : "Layout scores aggregate their constituent rooms by fixed input net area.";
-      $("tier-policy").hidden=activeBoard!=="open-space";
-      window.updateBoardHierarchy?.(activeBoard);
+      $("tier-policy").hidden=false;
+      window.updateBoardHierarchy?.(activeBoard, selectedModel);
     }
 
-    function render(data) {
+    function render(data, paperData) {
       leaderboardRoot = data;
+      paperLeaderboardRoot = paperData;
       if (!data.leaderboard_views?.some(item=>item.id===activeBoard)) activeBoard=data.default_leaderboard_view||"open-space";
       renderBenchmarkTabs();
       renderScoringSummary();
@@ -227,9 +237,10 @@ const $ = id => document.getElementById(id);
     }));
     async function load() {
       try {
-        const response = await fetch("./leaderboard.json", {cache:"no-store"});
-        if (!response.ok) throw new Error(`status ${response.status}`);
-        render(await response.json());
+        const responses = await Promise.all([fetch("./leaderboard.json", {cache:"no-store"}), fetch("./paper_leaderboard.json", {cache:"no-store"})]);
+        if (responses.some(response=>!response.ok)) throw new Error(`status ${responses.find(response=>!response.ok).status}`);
+        const [available, paper] = await Promise.all(responses.map(response=>response.json()));
+        render(available, paper);
       } catch (error) {
         $("rows").innerHTML = `<div class="error">Leaderboard update failed: ${esc(error.message)}</div>`;
       }

@@ -1,47 +1,115 @@
 import * as THREE from 'three';
 import { OrbitControls } from './vendor/OrbitControls.js';
-import { buildRealisticRoom } from './realistic-room.js';
+import { buildRealisticRoom } from './realistic-room.js?v=21d1f30cdf22';
 
 const $ = (id) => document.getElementById(id);
 const stage = $('scene-stage');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const colors = { collision: '#bc5e52', scale: '#a87824', access: '#267b72' };
+const colors = { collision: '#527bb2', scale: '#8d6bb0', access: '#267b72' };
+const textColors = { collision: '#355e92', scale: '#71508f', access: '#226d64' };
 const findings = {
-  collision: { number: '01', category: 'Physical validity', title: 'Two objects, one occupied space.',
-    description: 'The coffee table intersects the armchair. Inspect the highlighted contact area, then compare the adjusted arrangement.',
-    adjustedTitle: 'Give each object its own space.', adjustedDescription: 'The coffee table has moved away from the armchair. The two surfaces no longer occupy the same space in this demonstration.',
+  collision: { objects: 'Coffee table · Armchair', diagnosis: 'Move the table away from the armchair.', adjustedDiagnosis: 'The report’s fix separates the two objects.', number: '01', metric: 'Collision', question: 'Do the table and armchair intersect?', evidence: 'GREP inspects the contact between their surfaces.', category: 'Physical Validity', title: 'The table intersects the armchair.',
+    description: '',
+    adjustedTitle: 'The surfaces no longer intersect.', adjustedDescription: '',
     adjustedLabel: 'Objects separated', originalLabel: 'Object collision' },
-  scale: { number: '02', category: 'Visual coherence', title: 'A desk lamp at the wrong scale.',
-    description: 'The lamp is disproportionately large beside the desk and chair. Familiar nearby objects provide the scale reference.',
-    adjustedTitle: 'Bring the lamp back into proportion.', adjustedDescription: 'The same lamp is resized while the desk, chair, and other objects stay fixed. Compare its proportions against the surrounding furniture.',
+  scale: { objects: 'Desk lamp · Desk · Chair', diagnosis: 'Reduce the lamp’s size.', adjustedDiagnosis: 'The report’s fix reduces the lamp’s size.', number: '02', metric: 'Scale', question: 'Is the lamp reasonably sized for this desk?', evidence: 'GREP compares the lamp with the desk and chair.', category: 'Visual Coherence', title: 'The lamp is oversized.',
+    description: '',
+    adjustedTitle: 'The lamp is in proportion.', adjustedDescription: '',
     adjustedLabel: 'Lamp resized', originalLabel: 'Scale mismatch' },
-  access: { number: '03', category: 'Human-use logic', title: 'Furniture needs room to be used.',
-    description: 'The ottoman occupies the approach area in front of the cabinet. An object can fit in the room while obstructing another object’s use.',
-    adjustedTitle: 'Keep the approach area clear.', adjustedDescription: 'The ottoman has moved out of the cabinet’s approach area. The highlighted space is now open in this illustrative arrangement.',
-    adjustedLabel: 'Access cleared', originalLabel: 'Blocked access' },
+  access: { number: '03', metric: 'Function', category: 'Human-Use', objects: 'Cabinet door · Ottoman',
+    question: 'Can the cabinet door open fully?',
+    evidence: 'Evidence is incomplete. GREP requests the cabinet’s front view.',
+    title: 'The hinge is hidden from this view.', description: '',
+    adjustedTitle: 'Check the revised arrangement.', adjustedDescription: '',
+    adjustedLabel: 'Door clearance', originalLabel: 'Cabinet door' },
 };
-let selected = 'collision';
+let selected = 'access';
 let adjusted = false;
+let accessPhase = 'unseen';
+let doorResult = null;
+let arrangementMoving = false;
+let viewMoving = false;
+let pendingRevisionFocus = false;
 let annotations = true;
 let sceneAPI = null;
+let evidenceOperations = { measure: false, existing: false, render: false };
+let visualEvidencePhase = 'unseen';
+let visualEvidenceRevision = 0;
 
 function updateCopy() {
   const finding = findings[selected];
+  const hasDiagnosis = selected === 'access' ? ['blocked', 'clear'].includes(accessPhase) : visualEvidencePhase === 'ready';
+  const interactionBusy = !sceneAPI || arrangementMoving || viewMoving || (selected === 'access' && ['moving', 'opening'].includes(accessPhase));
   for (const button of document.querySelectorAll('[data-finding]')) {
     const active = button.dataset.finding === selected;
     button.classList.toggle('selected', active);
-    button.setAttribute('aria-pressed', String(active));
-    if (button.classList.contains('finding-row')) button.querySelector('strong').textContent = adjusted ? findings[button.dataset.finding].adjustedLabel : findings[button.dataset.finding].originalLabel;
+    if (button.tagName === 'BUTTON') button.setAttribute('aria-pressed', String(active));
+    if (button.classList.contains('finding-row')) button.querySelector('strong').textContent = findings[button.dataset.finding].question;
   }
+  $('check-question').textContent = finding.question;
+  $('check-evidence').textContent = finding.evidence;
   $('detail-category').textContent = finding.category;
-  $('detail-category').style.color = colors[selected];
+  $('detail-category').style.color = textColors[selected];
   $('detail-title').textContent = adjusted ? finding.adjustedTitle : finding.title;
   $('detail-description').textContent = adjusted ? finding.adjustedDescription : finding.description;
-  $('detail-status').textContent = adjusted ? 'Adjusted example' : 'Illustrative issue';
+  $('detail-status').textContent = adjusted ? 'Adjusted' : 'Finding';
   $('detail-status').classList.toggle('resolved', adjusted);
-  $('evidence-label').textContent = `${finding.number} / CLOSE-UP`;
-  $('evidence-canvas').setAttribute('aria-label', `Close-up: ${adjusted ? finding.adjustedLabel : finding.originalLabel}`);
-  $('finding-count').textContent = adjusted ? '3 illustrative changes' : '3 illustrative findings';
+  $('diagnosis-objects').textContent = finding.objects;
+  $('diagnosis-result').textContent = adjusted ? finding.adjustedDiagnosis || '' : finding.diagnosis || '';
+  $('door-test-btn').hidden = selected !== 'access';
+  $('door-result').hidden = selected !== 'access' || !['blocked', 'clear'].includes(accessPhase);
+  $('door-test-btn').disabled = !sceneAPI || arrangementMoving || ['unseen', 'moving', 'opening'].includes(accessPhase);
+  $('door-test-label').textContent = ['blocked', 'clear'].includes(accessPhase) ? 'Measure swing clearance again' : 'Measure swing clearance';
+  $('focus-label').textContent = selected === 'access' ? 'Render cabinet front' : 'Render another view';
+  $('focus-btn').disabled = interactionBusy;
+  $('focus-btn').classList.toggle('is-next', selected === 'access' ? accessPhase === 'unseen' : visualEvidencePhase === 'unseen');
+  $('door-test-btn').classList.toggle('is-next', selected === 'access' && accessPhase === 'ready');
+  $('adjust-finding-label').textContent = adjusted ? 'Restore original' : { collision: 'Apply report fix: move the table', scale: 'Apply report fix: resize the lamp', access: 'Apply report fix: move the ottoman' }[selected];
+  $('adjust-finding-btn').disabled = interactionBusy || !hasDiagnosis;
+  $('adjust-finding-btn').classList.toggle('is-next', !adjusted && hasDiagnosis);
+  if (selected === 'access') {
+    const angle = Math.round(doorResult?.angleDeg || 0);
+    const copy = {
+      unseen: ['View needed', 'The hinge is hidden from this view.', '', '', ''],
+      moving: ['Rendering', 'GREP is rendering the cabinet’s front view…', '', '', ''],
+      ready: ['Ready', 'The front view reveals the hinge and ottoman.', '', '', ''],
+      opening: ['Measuring', 'GREP measures clearance along the door’s swing…', '', '', ''],
+      blocked: ['Blocked', 'The ottoman blocks the door.', '', 'Move the ottoman outside the door’s swing.', `Opens ${angle}° of 90°`],
+      clear: ['Clear', 'The door clears the ottoman.', '', 'The report’s fix leaves the door’s swing clear.', 'Opens 90° of 90°'],
+    }[accessPhase];
+    $('detail-status').textContent = copy[0];
+    $('detail-title').textContent = copy[1];
+    $('detail-description').textContent = copy[2];
+    $('diagnosis-result').textContent = copy[3];
+    $('door-result').textContent = copy[4];
+    $('detail-status').classList.toggle('resolved', accessPhase === 'clear');
+    if (accessPhase === 'ready') $('check-evidence').textContent = 'Front view acquired. GREP can measure the door’s swing clearance.';
+    if (['opening', 'blocked', 'clear'].includes(accessPhase)) $('check-evidence').textContent = 'GREP measures the swing clearance from the cabinet and ottoman geometry.';
+  } else if (!hasDiagnosis) {
+    const rendering = visualEvidencePhase === 'moving';
+    $('check-evidence').textContent = selected === 'collision' ? 'GREP requests a closer view of the table and armchair.' : 'GREP requests a closer view of the lamp, desk, and chair.';
+    $('detail-status').textContent = rendering ? 'Rendering' : 'View needed';
+    $('detail-title').textContent = rendering ? 'GREP is rendering another view…' : selected === 'collision' ? 'The contact needs a closer view.' : 'The lamp needs a closer comparison.';
+    $('detail-status').classList.toggle('resolved', false);
+  }
+  $('door-illustration-note').hidden = selected !== 'access';
+  for (const chip of document.querySelectorAll('[data-evidence-operation]')) {
+    const active = evidenceOperations[chip.dataset.evidenceOperation];
+    chip.classList.toggle('used', active);
+    chip.setAttribute('aria-label', `${chip.textContent.trim()}: ${active ? 'used in this inspection' : 'not used in this inspection'}`);
+  }
+  $('detail-description').hidden = !$('detail-description').textContent;
+  $('diagnosis-result').hidden = !hasDiagnosis || !$('diagnosis-result').textContent;
+  $('diagnosis-step').hidden = false;
+  $('diagnosis-content').hidden = !hasDiagnosis;
+  $('diagnosis-pending').hidden = hasDiagnosis;
+  $('diagnosis-pending').textContent = 'Pending';
+  for (const step of document.querySelectorAll('[data-eval-step]')) {
+    step.dataset.state = { check: 'done', evidence: hasDiagnosis ? 'done' : 'current', diagnosis: hasDiagnosis ? 'current' : 'pending' }[step.dataset.evalStep];
+  }
+  $('evidence-label').textContent = `${finding.metric.toUpperCase()} / EVIDENCE`;
+  $('evidence-canvas').setAttribute('aria-label', `Evidence view: ${finding.metric}`);
+  $('finding-count').textContent = finding.metric;
   $('scene-version-label').textContent = adjusted ? 'Adjusted arrangement' : 'Original arrangement';
   for (const mode of ['original', 'adjusted']) {
     const active = (mode === 'adjusted') === adjusted;
@@ -49,15 +117,39 @@ function updateCopy() {
     $(`${mode}-btn`).setAttribute('aria-pressed', String(active));
   }
 }
+
 function selectFinding(id, focus = false, fromTour = false) {
+  pendingRevisionFocus = false;
+  evidenceOperations = { measure: false, existing: false, render: false };
+  visualEvidencePhase = 'unseen'; visualEvidenceRevision++;
+  if (id === 'access') { accessPhase = 'unseen'; doorResult = null; }
   selected = id; updateCopy(); sceneAPI?.select(id, focus, fromTour);
 }
+function setArrangement(value, returnFocus = false) {
+  if (!sceneAPI || value === adjusted) return;
+  pendingRevisionFocus = returnFocus;
+  adjusted = value;
+  evidenceOperations.measure = false;
+  visualEvidencePhase = 'unseen'; visualEvidenceRevision++;
+  if (selected !== 'access') evidenceOperations.render = false;
+  if (!['unseen','moving'].includes(accessPhase)) accessPhase = 'ready';
+  doorResult = null; updateCopy(); sceneAPI.setAdjusted(adjusted);
+}
+
+function restoreRevisionFocus() {
+  if (!pendingRevisionFocus || arrangementMoving || viewMoving) return;
+  const target = selected === 'access' && accessPhase === 'ready' ? $('door-test-btn') : $('focus-btn');
+  if (target.disabled || target.hidden) return;
+  pendingRevisionFocus = false;
+  target.focus({ preventScroll: true });
+}
+
 document.querySelectorAll('[data-finding]').forEach(button => button.addEventListener('click', () => selectFinding(button.dataset.finding)));
-for (const mode of ['original', 'adjusted']) $(`${mode}-btn`).addEventListener('click', () => {
-  adjusted = mode === 'adjusted'; updateCopy(); sceneAPI?.setAdjusted(adjusted);
-});
+for (const mode of ['original', 'adjusted']) $(`${mode}-btn`).addEventListener('click', () => setArrangement(mode === 'adjusted'));
+$('adjust-finding-btn').addEventListener('click', () => setArrangement(!adjusted, true));
 $('focus-btn').addEventListener('click', () => sceneAPI?.acquireView());
 $('tour-btn').addEventListener('click', () => sceneAPI?.toggleTour());
+$('door-test-btn').addEventListener('click', () => sceneAPI?.testDoor());
 $('overview-btn').addEventListener('click', () => sceneAPI?.view('perspective'));
 $('top-btn').addEventListener('click', () => sceneAPI?.view('top'));
 $('reset-btn').addEventListener('click', () => sceneAPI?.view('perspective'));
@@ -73,10 +165,15 @@ function failGracefully(error) {
   $('loading-state').hidden = true; $('webgl-fallback').hidden = false;
   $('hotspots').hidden = true; $('room-canvas').hidden = true;
   stage.dataset.ready = 'unavailable';
-  for (const id of ['focus-btn','overview-btn','top-btn','reset-btn','annotations-btn']) $(id).disabled = true;
+  for (const id of ['focus-btn','door-test-btn','adjust-finding-btn','overview-btn','top-btn','reset-btn','annotations-btn']) $(id).disabled = true;
 }
 
-createRoom().then(api => { sceneAPI = api; updateCopy(); }).catch(failGracefully);
+updateCopy();
+createRoom().then(api => {
+  sceneAPI = api; updateCopy();
+  if (adjusted) sceneAPI.setAdjusted(true);
+  if (selected !== 'collision') sceneAPI.select(selected, false);
+}).catch(failGracefully);
 
 async function createRoom() {
   const canvas = $('room-canvas');
@@ -113,7 +210,7 @@ async function createRoom() {
   function mesh(parent, geometry, material, x=0, y=0, z=0) {
     const object=new THREE.Mesh(geometry,material);object.position.set(x,y,z);parent.add(object);return object;
   }
-  const {chair,table,lamp,cabinet,ottoman,rig,route}=await buildRealisticRoom(scene,renderer,(count,total)=>{
+  const {chair,table,lamp,cabinet,ottoman,rig,route,cabinetMechanism}=await buildRealisticRoom(scene,renderer,(count,total)=>{
     $('loading-state').querySelector('strong').textContent=`Loading the room · ${count}/${total}`;
   });
 
@@ -125,40 +222,40 @@ async function createRoom() {
   }
   helpers.collision=volume('collision',[.48,.39,-.1],[.91,.72,.57]);
   helpers.scale=new THREE.BoxHelper(lamp,new THREE.Color(colors.scale));helpers.scale.material.transparent=true;helpers.scale.material.opacity=.7;helpers.scale.renderOrder=4;highlights.add(helpers.scale);
-  helpers.access=volume('access',[1.48,.07,.8],[2.65,.1,2.34]);
-  const accessWash=mesh(highlights,new THREE.PlaneGeometry(1.17,1.54),new THREE.MeshBasicMaterial({color:colors.access,transparent:true,opacity:.11,depthWrite:false}),2.065,.066,1.57);accessWash.rotation.x=-Math.PI/2;
   const collisionWash=mesh(highlights,new THREE.BoxGeometry(.43,.33,.67),new THREE.MeshBasicMaterial({color:colors.collision,transparent:true,opacity:.12,depthWrite:false}),.695,.555,.235);
   const evidenceCanvas=$('evidence-canvas');
   const evidenceContext=evidenceCanvas.getContext('2d',{alpha:false});
   let evidenceWidth=1,evidenceHeight=1;
   const evidenceCamera=new THREE.PerspectiveCamera(37,1.8,.05,60);
-  let width=1,height=1,dirty=true,evidenceDirty=true,inView=true,modeMix=0,modeTween=null,cameraTween=null;
-  let rigTween=null,tourStart=null,tourStep=-1;
+  let width=1,height=1,dirty=true,evidenceDirty=true,inView=true,evidenceInView=true,modeMix=0,modeTween=null,cameraTween=null;
+  let rigTween=null,tourStart=null,tourStep=-1,doorTween=null,doorProgress=0;
   let rigTarget=new THREE.Vector3(.67,.65,.25);
   const hotspots=Object.fromEntries([...document.querySelectorAll('.hotspot')].map(b=>[b.dataset.finding,b]));
-  const targets={collision:new THREE.Vector3(.67,.65,.25),scale:new THREE.Vector3(1.7,1.75,-2.05),access:new THREE.Vector3(2.05,.58,1.57)};
-  const focusOffsets={collision:new THREE.Vector3(4.5,4.2,5.2),scale:new THREE.Vector3(5,3.6,5.5),access:new THREE.Vector3(5,5,6)};
+  const targets={collision:new THREE.Vector3(.67,.65,.25),scale:new THREE.Vector3(1.7,1.75,-2.05),access:new THREE.Vector3(2.35,.57,1.8)};
+  const focusOffsets={collision:new THREE.Vector3(4.5,4.2,5.2),scale:new THREE.Vector3(5,3.6,5.5),access:new THREE.Vector3(-3.4,2.5,3.3)};
   function paintHelpers() {
     highlights.visible=annotations;
     rig.visible=annotations;route.visible=annotations;
     for(const [id,helper] of Object.entries(helpers))helper.visible=id===selected;
     collisionWash.visible=selected==='collision'&&modeMix<.5;
-    accessWash.visible=selected==='access';
+    cabinetMechanism.setGuideVisible(annotations && selected === 'access');
     helpers.collision.visible=selected==='collision'&&modeMix<.5;
     helpers.scale.update();
   }
   function paintMode(t) {
     modeMix=t;table.position.x=THREE.MathUtils.lerp(.15,-.35,t);
     lamp.scale.setScalar(THREE.MathUtils.lerp(2.65,1,t));
-    ottoman.position.set(THREE.MathUtils.lerp(2,-1.3,t),0,THREE.MathUtils.lerp(1.57,1.85,t));
+    ottoman.position.set(THREE.MathUtils.lerp(2.10,1.57,t),0,THREE.MathUtils.lerp(1.64,2.27,t));
+    cabinetMechanism.setOpenProgress(doorProgress);
     targets.scale.y=THREE.MathUtils.lerp(1.78,1.26,t);
     if(selected==='scale'){rigTarget.copy(targets.scale);if(rigTween)rigTween.toTarget.copy(targets.scale);}
     paintHelpers();dirty=true;evidenceDirty=true;
   }
-  const observerPositions={collision:new THREE.Vector3(-.8,1.3,2.0),scale:new THREE.Vector3(.35,1.8,.4),access:new THREE.Vector3(3.45,1.25,1.0)};
+  const observerPositions={collision:new THREE.Vector3(-.8,1.3,2.0),scale:new THREE.Vector3(.35,1.8,.4),access:new THREE.Vector3(4.65,2.0,2.55)};
   function evidenceView() {rig.lookAt(rigTarget);evidenceCamera.position.copy(rig.position);evidenceCamera.lookAt(rigTarget);}
-  function moveObserver(position,target,duration=1100) {
-    rigTween={start:performance.now(),duration:reduceMotion?0:duration,from:rig.position.clone(),to:position.clone(),fromTarget:rigTarget.clone(),toTarget:target.clone()};dirty=true;evidenceDirty=true;
+  function moveObserver(position,target,duration=1100,onComplete=null) {
+    rigTween={onComplete,start:performance.now(),duration:reduceMotion?0:duration,from:rig.position.clone(),to:position.clone(),fromTarget:rigTarget.clone(),toTarget:target.clone()};dirty=true;evidenceDirty=true;
+    viewMoving=true;updateCopy();
     $('camera-label').classList.add('moving');$('camera-label').querySelector('span').textContent='Acquiring view';
   }
   function explain(message,step=selected) {
@@ -166,40 +263,65 @@ async function createRoom() {
     for(const element of document.querySelectorAll('[data-tour-stage]'))element.classList.toggle('active',element.dataset.tourStage===step);
   }
   function stopTour(message=null) {
-    tourStart=null;tourStep=-1;$('tour-btn').setAttribute('aria-pressed','false');$('tour-icon').textContent='▶';$('tour-label').textContent='Replay inspection';
+    tourStart=null;tourStep=-1;$('tour-btn').setAttribute('aria-pressed','false');$('tour-icon').textContent='▶';$('tour-label').textContent='Walkthrough';
     if(message)explain(message,'report');
   }
   function acquireView(fromTour=false) {
+    if (arrangementMoving || viewMoving || (selected === 'access' && accessPhase === 'opening')) return;
     if(!fromTour)stopTour();
+    evidenceOperations.render = true;
     if(selected==='access'){
-      moveObserver(new THREE.Vector3(-.1,1.15,2.65),targets.access,1900);
-      explain('Change viewpoint: the ottoman blocks the cabinet’s approach.','access');
-      $('detail-title').textContent=adjusted?'The approach area is clear.':'The useful view is on the other side.';
-      $('detail-description').textContent=adjusted?'The revised viewpoint shows the clear approach area after the ottoman is moved.':'From the cabinet’s rear, the approach area is hidden. Moving around reveals the ottoman directly in front of it.';
-      $('detail-status').textContent=adjusted?'Adjusted example':'Evidence acquired';
+      accessPhase='moving';doorResult=null;doorTween=null;doorProgress=0;cabinetMechanism.setOpenProgress(0);updateCopy();
+      moveObserver(new THREE.Vector3(.6,1.8,3.25),targets.access,1600,()=>{
+        if(selected==='access'){accessPhase='ready';updateCopy();explain('GREP has a front view of the hinged door and ottoman. Measure the swing clearance next.','access');}
+      });
+      cameraTo(targets.access.clone().add(focusOffsets.access),targets.access,1.65);
+      explain('Evidence is incomplete. GREP requests a new view of the cabinet front.','access');
     }else{
+      const findingId = selected, revision = visualEvidenceRevision;
+      visualEvidencePhase = 'moving';
       const alternative=selected==='collision'?new THREE.Vector3(1.9,.95,1.9):new THREE.Vector3(2.9,1.6,-.3);
-      moveObserver(alternative,targets[selected],1400);
-      explain(selected==='collision'?'Inspect the contact from another angle.':'Use the desk and chair as scale references.');
+      moveObserver(alternative,targets[selected],1400,()=>{
+        if (selected !== findingId || visualEvidenceRevision !== revision) return;
+        visualEvidencePhase = 'ready'; updateCopy();
+        explain(adjusted ? findings[findingId].adjustedTitle : findings[findingId].title, 'report');
+      });
+      explain(selected==='collision'?'GREP renders another view across the contact area.':'GREP renders another view of the lamp, desk, and chair.');
     }
+  }
+  function testDoor(fromTour=false) {
+    if(selected!=='access'||arrangementMoving||['unseen','moving','opening'].includes(accessPhase))return;
+    if(!fromTour)stopTour();
+    evidenceOperations.measure = true;
+    doorProgress=0;cabinetMechanism.setOpenProgress(0);doorResult=null;accessPhase='opening';updateCopy();
+    doorTween={start:performance.now(),duration:reduceMotion?0:1500,target:Math.min(1,cabinetMechanism.getState().maxAngleDeg/90)};
+    explain('GREP measures first contact across the door’s swing. The animation illustrates that measurement.','access');dirty=true;evidenceDirty=true;
+  }
+  function resetDoor() {
+    doorTween=null;doorProgress=0;doorResult=null;cabinetMechanism.setOpenProgress(0);
   }
   function toggleTour() {
     if(tourStart!==null){stopTour('Inspection paused. Explore the room freely.');return;}
-    adjusted=false;updateCopy();modeTween={from:modeMix,to:0,start:performance.now(),duration:reduceMotion?0:600};
-    tourStart=performance.now();tourStep=-1;$('tour-btn').setAttribute('aria-pressed','true');$('tour-icon').textContent='Ⅱ';$('tour-label').textContent='Pause inspection';setView('perspective');
+    pendingRevisionFocus = false;
+    evidenceOperations = { measure: false, existing: false, render: false };
+    visualEvidencePhase = 'unseen'; visualEvidenceRevision++;
+    accessPhase = 'unseen';resetDoor();
+    adjusted=false;arrangementMoving=true;updateCopy();modeTween={from:modeMix,to:0,start:performance.now(),duration:reduceMotion?0:600};
+    tourStart=performance.now();tourStep=-1;$('tour-btn').setAttribute('aria-pressed','true');$('tour-icon').textContent='Ⅱ';$('tour-label').textContent='Pause';setView('perspective');
   }
   function runTour(now) {
     if(tourStart===null)return;
     const elapsed=now-tourStart;
-    const step=elapsed<2600?0:elapsed<6500?1:elapsed<10400?2:elapsed<14900?3:elapsed<18900?4:elapsed<23800?5:6;
+    const step=elapsed<2600?0:elapsed<6100?1:elapsed<10000?2:elapsed<13900?3:elapsed<17400?4:elapsed<20700?5:elapsed<24500?6:7;
     if(step===tourStep)return;tourStep=step;
-    if(step===0){explain('A room may look convincing. What should we inspect?','overview');moveObserver(new THREE.Vector3(-2.8,1.4,2.45),new THREE.Vector3(0,.7,0));}
-    if(step===1){selectFinding('collision',false,true);explain('Geometry flags a contact. Is it a real defect?','collision');}
-    if(step===2){acquireView(true);explain('A closer view exposes the table–chair intersection.','collision');}
-    if(step===3){selectFinding('scale',false,true);explain('Geometry alone is not enough: does the lamp fit the scene?','scale');}
-    if(step===4){selectFinding('access',false,true);explain('Can the cabinet be used? This view does not show its approach.','access');$('detail-status').textContent='Another view needed';}
+    if(step===0){explain('A furnished room creates relationships worth checking. Start with its objects and their uses.','overview');moveObserver(new THREE.Vector3(-2.8,1.4,2.45),new THREE.Vector3(0,.7,0));}
+    if(step===1){selectFinding('collision',false,true);explain('Physical Validity: do the table and armchair occupy the same space?','collision');}
+    if(step===2){acquireView(true);}
+    if(step===3){selectFinding('scale',false,true);explain('Visual Coherence: is the lamp reasonably sized for this desk?','scale');}
+    if(step===4){selectFinding('access',false,true);explain('Human-Use: does the cabinet door have enough room to open? Its hinge is hidden from this side.','access');}
     if(step===5){acquireView(true);}
-    if(step===6){stopTour('Three principles. Evidence behind each finding. Try “Adjusted”.');setView('perspective');}
+    if(step===6){testDoor(true);}
+    if(step===7){stopTour('The report identifies the ottoman. Apply the fix, then measure the swing clearance again.');}
   }
   function cameraTo(position,target,zoom=1) {
     cameraTween={start:performance.now(),duration:reduceMotion?0:720,fromPosition:camera.position.clone(),toPosition:position.clone(),fromTarget:controls.target.clone(),toTarget:target.clone(),fromZoom:camera.zoom,toZoom:zoom};
@@ -211,12 +333,14 @@ async function createRoom() {
   }
   function select(id,focus,fromTour=false) {
     if(!fromTour)stopTour();
-    moveObserver(observerPositions[id],targets[id]);
-    $('focus-btn').innerHTML='Acquire another view <span aria-hidden="true">↗</span>';
-    if(id==='access'&&!adjusted){$('detail-title').textContent='Can the cabinet be used?';$('detail-description').textContent='The starting camera is behind the cabinet. Acquire another view to inspect its approach area.';$('detail-status').textContent='Another view needed';}
-    if(!fromTour)explain(id==='access'?'This view is ambiguous. Move around to gather more evidence.':id==='scale'?'Compare proportions with familiar nearby objects.':'Geometry identifies a contact. Inspect the visual evidence.',id);
+    resetDoor();
+    moveObserver(observerPositions[id],targets[id],1100,fromTour&&id==='scale'?()=>{
+      if(tourStart!==null&&selected==='scale')acquireView(true);
+    }:null);
+    if(!fromTour)explain(id==='access'?'GREP needs a front view before measuring the door’s swing clearance.':id==='scale'?'GREP compares the lamp with the desk and chair.':'GREP checks whether the table and armchair intersect.',id);
     paintHelpers();evidenceView();dirty=true;evidenceDirty=true;
-    if(focus){cameraTo(targets[id].clone().add(focusOffsets[id]),targets[id],1.9);for(const button of [$('overview-btn'),$('top-btn')]){button.classList.remove('active');button.setAttribute('aria-pressed','false');}}
+    if(focus){cameraTo(targets[id].clone().add(focusOffsets[id]),targets[id],1.65);for(const button of [$('overview-btn'),$('top-btn')]){button.classList.remove('active');button.setAttribute('aria-pressed','false');}}
+    else if(!fromTour)setView('perspective');
   }
   function resize() {
     width=stage.clientWidth;height=stage.clientHeight;
@@ -230,6 +354,7 @@ async function createRoom() {
   new ResizeObserver(resize).observe(stage);
   new ResizeObserver(resize).observe($('evidence-canvas').parentElement);
   new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;dirty=true;evidenceDirty=true;},{rootMargin:'100px'}).observe(stage);
+  new IntersectionObserver(entries=>{evidenceInView=entries[0].isIntersecting;evidenceDirty=true;},{rootMargin:'100px'}).observe(evidenceCanvas.parentElement);
   controls.addEventListener('change',()=>{dirty=true;});
   controls.addEventListener('start',()=>{cameraTween=null;});
   let pointerDown=null;
@@ -252,13 +377,20 @@ async function createRoom() {
     controls.update();dirty=true;
   });
   canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();failGracefully(new Error('WebGL context lost'));});
-  document.addEventListener('visibilitychange',()=>{dirty=true;evidenceDirty=true;});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&tourStart!==null)stopTour('Inspection paused. Replay the inspection when ready.');dirty=true;evidenceDirty=true;});
   function render(now) {
     requestAnimationFrame(render);
-    if(document.hidden||!inView)return;
+    if(document.hidden)return;
+    if(!inView&&!evidenceInView&&tourStart!==null)stopTour('Inspection paused. Replay the inspection when the room is visible.');
+    if(!inView&&!evidenceInView&&!rigTween&&!doorTween&&!modeTween&&!cameraTween&&tourStart===null)return;
     runTour(now);
-    if(rigTween){const a=rigTween;const t=a.duration?Math.min(1,(now-a.start)/a.duration):1;const eased=t*t*(3-2*t);rig.position.lerpVectors(a.from,a.to,eased);rigTarget.lerpVectors(a.fromTarget,a.toTarget,eased);dirty=true;evidenceDirty=true;if(t===1){rigTween=null;$('camera-label').classList.remove('moving');$('camera-label').querySelector('span').textContent='GREP camera';}}
-    if(modeTween){const t=modeTween.duration?Math.min(1,(now-modeTween.start)/modeTween.duration):1;const eased=t*t*(3-2*t);paintMode(THREE.MathUtils.lerp(modeTween.from,modeTween.to,eased));if(t===1)modeTween=null;}
+    if(rigTween){const a=rigTween;const t=a.duration?Math.min(1,(now-a.start)/a.duration):1;const eased=t*t*(3-2*t);rig.position.lerpVectors(a.from,a.to,eased);rigTarget.lerpVectors(a.fromTarget,a.toTarget,eased);dirty=true;evidenceDirty=true;if(t===1){rigTween=null;viewMoving=false;$('camera-label').classList.remove('moving');$('camera-label').querySelector('span').textContent='GREP camera';a.onComplete?.();updateCopy();restoreRevisionFocus();}}
+    if(modeTween){const t=modeTween.duration?Math.min(1,(now-modeTween.start)/modeTween.duration):1;const eased=t*t*(3-2*t);paintMode(THREE.MathUtils.lerp(modeTween.from,modeTween.to,eased));if(t===1){modeTween=null;arrangementMoving=false;updateCopy();restoreRevisionFocus();}}
+    if(doorTween){
+      const t=doorTween.duration?Math.min(1,(now-doorTween.start)/doorTween.duration):1;
+      doorProgress=(1-Math.pow(1-t,3))*doorTween.target;doorResult=cabinetMechanism.setOpenProgress(doorProgress);dirty=true;evidenceDirty=true;
+      if(t===1){doorProgress=1;doorResult=cabinetMechanism.setOpenProgress(1);doorTween=null;accessPhase=doorResult.blocked?'blocked':'clear';updateCopy();explain(doorResult.blocked?'The measurement finds the ottoman in the door’s swing. Apply the report’s fix, then measure again.':'The report’s fix leaves the door’s full swing clear.','report');}
+    }
     if(cameraTween){const a=cameraTween;const t=a.duration?Math.min(1,(now-a.start)/a.duration):1;const eased=1-Math.pow(1-t,3);camera.position.lerpVectors(a.fromPosition,a.toPosition,eased);controls.target.lerpVectors(a.fromTarget,a.toTarget,eased);camera.zoom=THREE.MathUtils.lerp(a.fromZoom,a.toZoom,eased);camera.updateProjectionMatrix();dirty=true;if(t===1)cameraTween=null;}
     controls.update();
     if(evidenceDirty){
@@ -275,5 +407,5 @@ async function createRoom() {
   paintHelpers();resize();evidenceView();requestAnimationFrame(render);
   $('loading-state').hidden=true;stage.dataset.ready='true';stage.dataset.scene='synthetic';$('tour-btn').disabled=false;
   if(matchMedia('(pointer:coarse)').matches)$('scene-hint').textContent='Drag to orbit · Pinch to zoom';
-  return {select,acquireView,toggleTour,view:setView,setAnnotations(){paintHelpers();dirty=true;evidenceDirty=true;},setAdjusted(value){stopTour();modeTween={from:modeMix,to:value?1:0,start:performance.now(),duration:reduceMotion?0:800};explain(value?'A targeted revision addresses each illustrated issue.':'Return to the original arrangement. Inspect a finding.',value?'report':selected);dirty=true;}};
+  return {select,acquireView,testDoor,toggleTour,view:setView,setAnnotations(){paintHelpers();dirty=true;evidenceDirty=true;},setAdjusted(value){stopTour();resetDoor();arrangementMoving=true;updateCopy();modeTween={from:modeMix,to:value?1:0,start:performance.now(),duration:reduceMotion?0:800};explain(selected==='access'?(value?'The report’s fix moves the ottoman. Measure swing clearance again.':'The ottoman is close to the cabinet again. Obtain evidence and measure the swing clearance.'):(value?'The adjusted room applies the report’s fixes.':'Return to the original arrangement.'),value?'report':selected);dirty=true;}};
 }
