@@ -62,11 +62,11 @@ export async function buildRealisticRoom(scene, renderer, onProgress) {
   // Neutral benchmark floor: no enclosing walls, vegetation, or raised wooden plinth.
   box(scene,7.2,.055,5.8,0,-.025,0,'#b9babc',.009);
   const rugMat=new THREE.MeshStandardMaterial({map:rugMap,roughness:1,color:'#d8cabb'});
-  box(scene,3.95,.014,3.3,-.66,.016,-.2,rugMat,.003);
+  const rug=box(scene,3.95,.014,3.3,-.66,.016,-.2,rugMat,.003);rug.userData.finding='collision';
   const rug2=rugMat.clone();rug2.color=new THREE.Color('#9b8e83');
   box(scene,1.93,.012,1.88,2.17,.013,-1.75,rug2,.003);
 
-  const sofa=object('sofa',-.97,-1.82,2.95,'x',0);
+  const sofa=object('sofa',-.97,-1.82,2.95,'x',0,.016);sofa.userData.finding='collision';
   sofa.traverse(part=>{
     if(!part.isMesh)return;
     const previous=part.material;
@@ -76,10 +76,10 @@ export async function buildRealisticRoom(scene, renderer, onProgress) {
     }else if(previous.name==='Frame'){part.material=wood.clone();part.material.color=new THREE.Color('#c5a27e');}
     else if(previous.name==='Fringe'){part.visible=false;}
   });
-  const chair=object('chair',1.08,.22,.89,'x',-.18);chair.userData.finding='collision';
+  const chair=object('chair',1.08,.22,.89,'x',-.18);
   function softenChair(target,color){target.traverse(part=>{if(part.isMesh&&part.material.name.includes('pillow')){const old=part.material;part.material=new THREE.MeshPhysicalMaterial({map:linen,normalMap:old.normalMap,normalScale:new THREE.Vector2(.55,.55),aoMap:old.aoMap,roughness:.88,bumpMap:linen,bumpScale:.0015,sheen:.28,sheenColor:new THREE.Color(color),sheenRoughness:.8,color});}});}
   softenChair(chair,'#7c8878');
-  const table=object('table',.15,.25,1.35,'x');table.userData.finding='collision';
+  const table=object('table',-.35,.25,1.35,'x');
   const shelf=object('shelf',-2.98,-1.65,2.12,'y',Math.PI/2);
   shelf.traverse(part=>{if(part.isMesh){const old=part.material;part.material=wood.clone();part.material.aoMap=old.aoMap;part.material.aoMapIntensity=.8;part.material.color=new THREE.Color('#b4a08b');}});
   // A working cabinet: the single door has a real hinge, visible interior, and
@@ -115,7 +115,7 @@ export async function buildRealisticRoom(scene, renderer, onProgress) {
   const powerLight=new THREE.Mesh(new THREE.SphereGeometry(.003,8,6),new THREE.MeshBasicMaterial({color:'#8baaba'}));powerLight.position.set(.73,.68,.008);tvGroup.add(powerLight);
   for(const x of [-.55,.55]){const foot=box(tvGroup,.027,.14,.22,x,.63,0,steel,.004);foot.rotation.z=x>0?-.2:.2;}
   const desk=baseGroup();desk.position.set(2.2,0,-1.91);
-  box(desk,1.82,.065,.84,0,.795,0,wood,.012);
+  const desktop=box(desk,1.82,.065,.84,0,.795,0,wood,.012);
   for(const x of [-.82,.82])for(const z of [-.32,.32])box(desk,.036,.76,.036,x,.4,z,steel,.003);
   box(desk,.035,.055,.7,-.82,.16,0,steel,.003);box(desk,.035,.055,.7,.82,.16,0,steel,.003);
   box(desk,.6,.2,.66,.55,.66,0,darkWood,.008);box(desk,.51,.12,.015,.55,.66,.34,wood,.004);box(desk,.14,.014,.028,.55,.69,.36,bronze,.003);
@@ -255,5 +255,5 @@ export async function buildRealisticRoom(scene, renderer, onProgress) {
   const dashes=new THREE.InstancedMesh(dashGeometry,dashMaterial,50);
   for(let i=0;i<50;i++){const a=samples[i*2],b=samples[i*2+1],q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize());dashes.setMatrixAt(i,new THREE.Matrix4().compose(a.clone().add(b).multiplyScalar(.5),q,new THREE.Vector3(1,a.distanceTo(b),1)));}
   route.add(dashes);
-  return {chair,table,lamp,cabinet,ottoman,rig,route,cabinetMechanism};
+  return {chair,table,lamp,desk,desktop,sofa,rug,cabinet,ottoman,rig,route,cabinetMechanism};
 }

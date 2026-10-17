@@ -61,35 +61,49 @@ articulated furniture. The UI obtains a front view, runs the door illustration,
 then presents its object-level diagnosis. Mode changes reset the door and disable
 testing until the furniture finishes moving.
 
-The homepage uses this reading order: Hero with the original Figure 1 teaser;
-What GREP does with a compact statement of the two core ideas; Interactive case;
-Three principles; How GREP evaluates; Examples and leaderboard; the original
-validation notes. The first complete walkthrough is the interactive case; detailed
-paper comparisons and the framework follow it. `assets/figures/` contains the original
+The homepage starts with the title, all three evaluation principles, a short
+human-agreement result, and the live top-three leaderboard preview. Seven numbered sections follow:
+1. What GREP does; 2. Why do we need GREP; 3. How does GREP do it;
+4. Principles and workflow; 5. Inspect the room, including links to evaluated
+scenes; 6. What GREP reveals; 7. Bonus: reports for revision. Keep each explanation short and distinguish
+principled, adaptive discovery from proactive evidence. `assets/figures/` contains the original
 vector figures and web PNGs. `paper-framework-source.json` records Figure 2
 provenance; `paper-evidence-source.json` records the full Figure 1 teaser and its
 four unmodified crops. Clicking a figure opens its vector version.
-The three principles are expanded in progressive order with their metrics and
-Figure 1 comparisons. Preserve the `Human-Use` label in surrounding copy.
+What GREP does gives most of its width to evaluation: three principles, eight
+metrics, and score/report outputs. Principles and workflow uses a connected native
+diagram with a visible evidence-acquisition loop; Figure 2 stays linked. The same
+A–C tags identify interactive checks.
+Preserve the `Human-Use` label in surrounding copy.
 
 The contribution comparisons are scoped to the paper's Figure 1 examples, with
 specific comparator outcomes and source links. Do not generalize these examples
 into claims that a baseline always fails. The compact study comparisons retain
 their sample counts and protocol context.
 
-The two benchmark cards follow the method explanation, labeled Open space and With
+The two benchmark cards follow the interactive room, labeled Open space and With
 wall layouts, and link to real Fable examples and their respective Leaderboards.
 `home-leaderboard.js` fetches `paper_leaderboard.json` and displays the three
 highest overall paper averages for the selected setting; no scores are hardcoded.
-The Figure 1 desk-and-chair example appears beside the explanation of proactive
-evidence. The method contribution list is visible at every width.
+Why uses compact original scene crops next to HTML comparisons, with full Figure 1
+panels linked. `paper-web-crops.json` records the vector crop coordinates and hashes.
+How retains the original multi-view evidence sequence. Original visuals are used
+for evidence and the revision curve, while task/flow diagrams use native HTML/SVG.
+Results show human agreement with both baselines. Paper-only pipeline/agent
+findings link to Tables 2 and 3; the excluded interactive boards stay excluded.
+Revision emphasizes Figure 5a and the separate 0–1 study protocol. Layout-change
+counts remain supplementary. The Table 9 record is explicitly a paper example,
+not a substitute for the selected scene's missing report.
 
 The illustrative room first presents three questions with principle tags only.
-Its operation chips reflect actual illustration operations: the alternative camera
-action renders a view; the cabinet additionally measures swing clearance. No
-stored-view retrieval is claimed. Door motion visualizes the measurement and is
+Its operation chips reflect actual illustration operations: A measures sofa/rug
+bounding-box overlap and retrieves a stored view, B measures lamp/desk dimensions
+and retrieves a stored view, and C inspects a stored view before requesting a new
+front view and measuring clearance. Stored views are captured on scene setup or
+placement changes. Door motion visualizes the measurement and is
 explicitly distinguished from GREP simulating articulated furniture. The report-fix
-action uses the existing global Original/Adjusted configurations. The cabinet
+action shows a staged generator revision, changing only the ottoman position.
+Lamp scale stays unchanged in both states, and its diagnosis reflects that. The cabinet
 narration remains an assistive live region, and diagnosis follows the measurement.
 
 Astra WF S100–S109 and the absent Astra RC export have display-only `Coming soon`

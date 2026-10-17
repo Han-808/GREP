@@ -79,13 +79,13 @@ const $ = id => document.getElementById(id);
       const board = $("ranking-board");
       board.dataset.view = viewState.view === "overall" ? "overall" : "metric";
       $("ranking-title").textContent = viewState.view === "overall" ? "Overall ranking" : `${meta?.label || "Metric"} ranking`;
-      $("ranking-description").textContent = viewState.view === "fine" ? "Available-case avg. · 0–100" : "Paper avg. · 0–100";
+      $("ranking-description").textContent = viewState.view === "fine" ? "Available-case avg. · 0–100" : "Paper Table 1 · 0–100";
       $("paper-table-reference").hidden = viewState.view === "fine";
       const countLabel = viewState.view === "fine"
         ? (activeBoard === "open-space" ? "Available scenes" : "Available layouts")
         : (activeBoard === "open-space" ? "Scored scenes" : "Scored layouts");
       $("ranking-header").innerHTML = viewState.view === "overall"
-        ? `<span role="columnheader">Rank</span><span role="columnheader">Model</span><span class="overall-heading" role="columnheader">Avg. Overall ↑</span>${metricGroups.map(group => `<span class="category-heading" role="columnheader">Avg. ${esc(group.label)}</span>`).join("")}<span role="columnheader">${countLabel}</span>`
+        ? `<span role="columnheader">Rank</span><span role="columnheader">Model</span><span class="overall-heading" role="columnheader">Overall ↑</span>${metricGroups.map(group => `<span class="category-heading" role="columnheader">Avg. ${esc(group.label)}</span>`).join("")}<span role="columnheader">${countLabel}</span>`
         : `<span role="columnheader">Rank</span><span role="columnheader">Model</span><span role="columnheader">Avg. ${esc(meta?.label || "Score")} ↑</span><span role="columnheader">${countLabel}</span>`;
     }
 

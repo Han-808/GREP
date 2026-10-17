@@ -35,7 +35,7 @@ window.grepModelKey = (key, scope) => grepModelDisplay.find(model => model.wf ==
     if (levels) {
       levels.hidden = false;
       levels.setAttribute('aria-label', 'Model benchmarks');
-      levels.replaceChildren(...policy.scopes.map(item => makeLink(item.id === 'open-space' ? 'Open space (WF)' : 'With wall layouts (RC)', boardLink(page, item.id), item.id === scope)));
+      levels.replaceChildren(...policy.scopes.map(item => makeLink(item.id === 'open-space' ? 'Open space (no walls)' : 'With wall layouts', boardLink(page, item.id), item.id === scope)));
     }
     const context = document.getElementById('hierarchy-context');
     if (context) { context.textContent = ''; context.hidden = true; }
@@ -50,7 +50,7 @@ window.grepModelKey = (key, scope) => grepModelDisplay.find(model => model.wf ==
   if (!document.querySelector('.board-footer')) {
     const footer = document.createElement('footer'); footer.className = 'board-footer';
     const label = document.createElement('span'); label.textContent = 'Grounding generated room evaluation in principles.';
-    const links = document.createElement('div'); links.className = 'footer-links'; links.append(makeLink('Overview', './'), makeLink('Code ↗', 'https://github.com/Han-808/GREP'));
+    const links = document.createElement('div'); links.className = 'footer-links'; links.append(makeLink('Overview', './'));
     footer.append(makeLink('GREP', './'), label, links); document.body.append(footer);
   }
 })();

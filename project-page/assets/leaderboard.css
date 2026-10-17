@@ -6,7 +6,8 @@
 .board-context .scope-name { color: var(--ink); font-size: 14px; font-weight: 580; }
 .board-context a { margin-left: auto; color: var(--accent); text-decoration: none; }
 .board-context a:hover { text-decoration: underline; text-underline-offset: 4px; }
-.ranking-section { min-width: 0; }
+.ranking-section { min-width: 0; max-width:100%; }
+.ranking-uncertainty{font-size:12px;line-height:1.7;color:var(--muted);max-width:880px;margin:0 0 18px}.ranking-uncertainty a{color:var(--accent)}
 .ranking-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 22px; }
 .ranking-head h2 { margin: 0 0 6px; font-size: 21px; font-weight: 600; letter-spacing: -.02em; }
 .ranking-description { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
@@ -23,7 +24,7 @@
 .metric-option:hover { border-color: #9da9aa; color: var(--ink); }
 .metric-option[aria-pressed="true"] { border-color: #b4d3ce; color: #246f67; background: #f0f7f5; }
 .board { min-width: 0; border-top: 1px solid #cbd0d7; border-bottom: 1px solid #cbd0d7; }
-.table-scroll { overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin; scrollbar-color: #c3cccf #fff; }
+.table-scroll { width:100%; max-width:100%; min-width:0; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: thin; scrollbar-color: #c3cccf #fff; }
 .table-header, .ranking-row { display: grid; grid-template-columns: 47px minmax(210px, 1.6fr) minmax(84px, .65fr) repeat(3, minmax(140px, 1fr)) 70px; gap: 12px; align-items: center; min-width: 960px; }
 .table-header { min-height: 54px; padding: 13px 15px; background: #fafbfb; color: var(--muted); font-size: 11px; font-weight: 550; line-height: 1.4; }
 .table-header > :nth-child(n + 3) { text-align: right; }
@@ -99,12 +100,12 @@
   .view-tabs { align-self: flex-start; }
   .summary-categories { gap: 20px; }
 }
-@media (max-width: 680px) {
+@media (max-width: 760px) {
   .leaderboard-page { padding: 0 20px 55px; }
   .leaderboard-page .page-intro { padding: 33px 0 14px; }
   .leaderboard-page .board-context { margin-bottom: 25px; gap: 6px 14px; font-size: 12px; }
   .board-context a { margin-left: 0; }
-  .table-header, .ranking-row { grid-template-columns: 176px 73px repeat(3, 132px) 62px; min-width: 778px; padding: 14px 10px; gap: 13px; }
+  .table-header, .ranking-row { grid-template-columns: minmax(126px,1.5fr) 58px repeat(3,minmax(78px,1fr)) 45px; min-width: 560px; padding: 14px 10px; gap: 10px; }
   .table-header > :first-child, .ranking-row > .rank { display: none; }
   .table-header > :nth-child(2), .ranking-row > .model-cell { position: sticky; left: 0; z-index: 1; margin: -14px 0 -14px -10px; padding: 14px 10px; min-height: 69px; display: flex; align-items: center; background: #fff; box-shadow: 10px 0 12px -14px #57626e; }
   .table-header > :nth-child(2) { background: #fafbfb; min-height: 54px; }

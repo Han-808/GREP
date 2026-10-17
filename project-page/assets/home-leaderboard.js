@@ -11,7 +11,7 @@
     if (!buttons.length || !rows || !caption || !status || !fullLink) return;
 
     const labels = {
-      'open-space': 'Open space',
+      'open-space': 'Open space (no walls)',
       'multi-room': 'With wall layouts',
     };
     let scope = buttons.find(button => button.getAttribute('aria-pressed') === 'true')?.dataset.previewScope;

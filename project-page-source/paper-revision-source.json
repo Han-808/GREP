@@ -1,0 +1,16 @@
+{
+  "source": "paper/GREP.pdf",
+  "source_sha256": "f6decf8c90c264c39528fba2788845b4a11bc99c63c4b900fcff82683690b458",
+  "page": 9,
+  "figure": "5(a)",
+  "crop_pdf_points": [
+    108.1551724137931,
+    582.384,
+    281.7310344827586,
+    712.272
+  ],
+  "pdf": "assets/figures/grep-revision-curve.pdf",
+  "png": "assets/figures/grep-revision-curve.png",
+  "png_sha256": "5ba6c258836b29c73d88eada37020ed6386f9e1d46a0232625079f9fb0ef777e",
+  "method": "Original page artwork clipped without relabeling or redrawing; Poppler 450 dpi."
+}

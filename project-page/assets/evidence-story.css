@@ -1,0 +1,122 @@
+/* Paper evidence supports each claim; the demo carries the workflow. */
+.hero-description .inline-stat{display:inline;margin:0;color:#267b72;font-weight:650}
+.narrative-hero{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:50px}.hero-teaser img{width:100%;max-height:none}.hero-teaser figcaption{display:block;font-size:12px;line-height:1.7}.hero-teaser figcaption strong{display:block;font-size:17px;color:var(--ink);margin-top:16px;font-weight:550}.hero-teaser figcaption span{display:block;margin-top:6px}.hero-teaser a:hover{text-decoration:underline}
+.evidence-cases{display:grid;grid-template-columns:1fr 1fr;gap:44px}.evidence-cases article{min-width:0}.evidence-cases article>a{display:flex;justify-content:center;align-items:center;height:340px;background:#fbfcfc;border:1px solid var(--line);border-radius:6px;padding:18px;cursor:zoom-in}.evidence-cases img{display:block;max-width:100%;max-height:100%;width:auto;height:auto}.evidence-cases h3{font-size:19px;letter-spacing:-.3px;font-weight:600;margin:20px 0 10px}.evidence-cases p{font-size:14px;line-height:1.85;color:var(--muted);margin:0}.evidence-cases p strong{font-weight:550;color:#3a5751}.figure-key,.study-context{font-size:12px;line-height:1.75;color:var(--muted);margin:20px 0 0}.figure-key a,.study-context a{color:#267b72}
+.proactive-proof{margin:28px auto 0;max-width:1050px}.proactive-proof img{display:block;width:100%;height:auto}.proactive-proof figcaption{font-size:12px;line-height:1.7;color:var(--muted);margin-top:14px}.proactive-proof figcaption a{color:#267b72}
+.workflow-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));list-style:none;padding:20px 0;margin:0;border-block:1px solid var(--line);gap:25px}.workflow-strip li{display:flex;align-items:flex-start;gap:12px}.workflow-strip b{display:grid;place-items:center;width:25px;height:25px;flex:none;background:#eaf3f1;color:#267b72;border-radius:50%;font-size:12px}.workflow-strip span{font-size:12px;color:var(--muted);line-height:1.65}.workflow-strip strong{display:block;color:var(--ink);font-weight:550;font-size:15px;margin-bottom:4px}
+.demo-badge{white-space:normal;max-width:250px;line-height:1.5}.diagnosis-facts{display:grid;grid-template-columns:65px 1fr;gap:8px 12px;font-size:12px;line-height:1.6;margin:14px 0}.diagnosis-facts dt{color:var(--muted)}.diagnosis-facts dd{margin:0;color:#344541}.finding-panel .inspection-action:disabled{opacity:1;background:#edf1ef;color:#77857e;border-color:#dce3df;cursor:wait}.finding-panel .inspection-action:disabled .action-arrow{visibility:hidden}
+.agreement-results{display:grid;grid-template-columns:repeat(3,1fr);gap:25px;padding:22px 0;border-block:1px solid var(--line)}.agreement-results strong{display:block;font-size:42px;font-weight:600;letter-spacing:-1px;color:#627473}.agreement-results div:first-child strong{color:#267b72}.agreement-results span{display:block;font-size:14px;margin-top:8px;color:var(--muted)}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;margin-top:30px}.insight-grid article{padding:20px;border:1px solid var(--line);border-radius:5px}.insight-grid h3{font-weight:500;font-size:15px;margin:0 0 15px;color:#627473}.insight-grid strong{font-size:25px;font-weight:600;color:#267b72;letter-spacing:-.5px}.insight-grid p{font-size:13px;color:var(--muted);line-height:1.75;margin:12px 0}.insight-grid a{font-size:11px;color:#267b72}.revision-gain{display:block;color:#267b72;font-size:37px;font-weight:600;letter-spacing:-1px;margin-bottom:18px}.revision-chart{margin:0}.revision-chart img{display:block;width:100%;height:auto}.revision-chart figcaption{font-size:12px;color:#267b72;margin-top:10px}.revision-copy .study-context{font-size:12px;line-height:1.65}
+.paper-report-example{border-block:1px solid var(--line);margin-top:30px}.paper-report-example summary{padding:19px 0;cursor:pointer;font-size:15px;font-weight:550;color:#315c4c}.paper-report-example>div{padding:0 0 24px;max-width:950px}.paper-report-example p{font-size:12px;line-height:1.6;color:var(--muted)}.paper-report-example dl{display:grid;grid-template-columns:130px 1fr;gap:13px 20px;font-size:14px;line-height:1.7}.paper-report-example dt{color:#627473}.paper-report-example dd{margin:0}.paper-report-example a{font-size:12px;color:#267b72}
+@media(max-width:900px){.narrative-hero{gap:28px}.evidence-cases{gap:24px}.evidence-cases article>a{height:290px;padding:12px}.insight-grid{gap:14px}.insight-grid article{padding:16px}.insight-grid strong{font-size:21px}.workflow-strip{gap:14px}.workflow-strip strong{font-size:14px}.workflow-strip span{font-size:11px}}
+@media(max-width:600px){.narrative-hero{grid-template-columns:1fr}.hero-teaser img{max-height:none}.hero-teaser figcaption strong{font-size:16px}.evidence-cases{grid-template-columns:1fr;gap:26px}.evidence-cases article>a{height:auto;max-height:none;padding:14px}.evidence-cases img{width:100%;height:auto}.evidence-cases h3{font-size:18px;margin-top:15px}.evidence-cases p{font-size:13px}.figure-key,.study-context{font-size:11px}.proactive-proof{margin-top:22px}.proactive-proof figcaption{font-size:11px}.workflow-strip{grid-template-columns:1fr;gap:17px}.workflow-strip strong{font-size:14px}.workflow-strip span{font-size:12px}.agreement-results{gap:14px}.agreement-results strong{font-size:28px}.agreement-results span{font-size:11px}.insight-grid{grid-template-columns:1fr;gap:15px}.insight-grid strong{font-size:25px}.revision-gain{font-size:32px}.paper-report-example dl{grid-template-columns:1fr;gap:4px;font-size:13px}.paper-report-example dd{margin-bottom:10px}.paper-report-example summary{font-size:14px}.diagnosis-facts{font-size:12px}}
+
+/* Give the evaluator visual priority; use paper scenes as compact evidence. */
+:root{--ink:#202c2c;--muted:#4c5a58;--line:#dce4e1}
+.page-width:not(.demo-section),.nav-wrap{max-width:1320px}
+.story-section{padding-block:44px}
+.story-heading h2,.numbered-section .section-top h2{font-size:32px;font-weight:650;letter-spacing:-.7px}
+.story-heading p,.numbered-section .section-lead{font-size:18px;line-height:1.7;font-weight:450;color:var(--muted)}
+.story-heading{margin-bottom:27px}
+.paper-cite,.section-source{font-size:13px;font-weight:500;color:#286f66}
+.nav-links,.code-link{font-size:15px;font-weight:500}
+.narrative-hero{grid-template-columns:minmax(0,1.3fr) minmax(360px,1fr);gap:64px;padding-block:44px;align-items:center}
+.narrative-hero .title-grep{font-size:54px;font-weight:800;margin-bottom:16px}
+.narrative-hero .title-expansion{font-size:34px;font-weight:650;line-height:1.25}
+.narrative-hero .hero-description{font-size:18px;line-height:1.7;color:#43514f;margin:22px 0 16px;max-width:650px;font-weight:400}
+.narrative-hero .hero-description strong{display:inline;font-weight:600;color:#263d38;margin:0}
+.hero-result{display:block;font-size:15px;color:#3b514b;margin:0 0 23px;line-height:1.6}
+.hero-result>strong{font-size:19px;font-weight:700;color:#267b72}
+.hero-result>span{display:block;color:#52645e;font-size:14px}
+.hero-result:hover{text-decoration:underline;text-underline-offset:4px}
+.narrative-hero .research-links a{font-size:14px;font-weight:550;min-height:42px;padding:9px 16px}
+.narrative-hero>.leaderboard-preview{width:100%;max-width:none;margin:0;padding:24px;background:#fff;border:1px solid #d3dfda;box-shadow:0 6px 24px #233a2c04}
+.preview-heading h2{font-size:21px;font-weight:650}.preview-heading h2>span{font-size:13px;color:#55635d;white-space:nowrap}
+.preview-heading .paper-cite{font-size:12px}.preview-scope button{font-size:13px;min-height:39px;font-weight:500;color:#465c53}
+.leaderboard-preview table{font-size:15px}.leaderboard-preview caption{font-size:12px;color:#52605b;margin-top:5px}.leaderboard-preview th,.leaderboard-preview td{padding:10px 5px}.leaderboard-preview thead th{font-size:12px;font-weight:500;color:#53615c}.leaderboard-preview tbody th{font-weight:550}.leaderboard-preview .preview-score{font-weight:650}.preview-full-link{font-size:14px;font-weight:550;margin-top:16px}
+.evaluation-overview{display:grid;grid-template-columns:minmax(210px,.75fr) minmax(0,2.35fr);gap:38px;align-items:center}
+.scene-input{position:relative;padding-right:5px;min-width:0}.scene-input h3{font-size:19px;line-height:1.4;font-weight:600;margin:0 0 6px}.scene-input p{font-size:14px;line-height:1.6;color:#53615b;margin:0 0 18px}.scene-input img{display:block;width:100%;height:175px;object-fit:contain;background:#363739;border-radius:5px}.scene-input>span:not(.input-arrow){display:block;font-size:15px;font-weight:500;margin-top:12px;color:#485b52}.input-arrow{position:absolute;right:-30px;top:51%;font-size:27px;font-weight:400;color:#4f8a7a}
+.evaluation-core{background:#f2f7f5;border:1px solid #bfcfc7;border-radius:8px;padding:27px 30px 24px;min-width:0;box-shadow:inset 0 3px 0 #2a7669}
+.evaluation-core-title{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:27px}
+.evaluation-core-title h3{font-size:30px;line-height:1.25;font-weight:700;letter-spacing:-.6px;color:#215b50;margin:0}
+.evaluation-core-title>span{font-size:13px;font-weight:500;color:#466457;white-space:nowrap}
+.metric-families{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.metric-families h4{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:650;color:var(--metric-ink);margin:0 0 13px;line-height:1.4}
+.metric-families h4>span{display:grid;place-items:center;flex:none;width:23px;height:23px;border-radius:50%;background:var(--category);color:white;font-size:11px;font-weight:650}
+.metric-families ul{list-style:none;margin:0;padding:0;font-size:16px;font-weight:450;line-height:1.9;color:#354c41}
+.evaluation-outputs{display:grid;grid-template-columns:1fr 1.3fr;gap:25px;border-top:1px solid #cadbd2;margin-top:24px;padding-top:20px}
+.evaluation-outputs strong{display:block;font-size:17px;font-weight:650;color:#284d40;margin-bottom:6px}
+.evaluation-outputs span{font-size:14px;line-height:1.6;color:#465e52}
+.evidence-cases{gap:26px}
+.evidence-cases article{display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px;align-items:center;padding:23px;border:1px solid var(--line);border-radius:7px;background:white}
+.evidence-cases article>a.case-thumbnail{display:block;width:190px;height:190px;min-width:0;padding:0;border:0;border-radius:5px;overflow:hidden;background:#f1f3f2}
+.evidence-cases img{width:100%;height:100%;max-height:none;object-fit:contain}
+.case-label{display:block;font-size:12px;font-weight:650;color:#61716a;margin-bottom:9px}
+.evidence-cases h3{font-size:21px;line-height:1.3;font-weight:650;margin:0 0 16px;letter-spacing:-.35px}
+.case-reading dl{display:grid;gap:4px;margin:0;font-size:15px;line-height:1.6}
+.case-reading dt{font-size:12px;font-weight:650;color:#53685d}.case-reading dd{margin:0 0 10px;color:#44564e}.case-reading dt:last-of-type{color:#216d5d}.case-reading dd:last-child{margin-bottom:0;font-weight:550;color:#294f40}
+.approach-grid{gap:26px}.approach-grid h3{font-size:23px;font-weight:650}.approach-grid p{font-size:17px;line-height:1.75;font-weight:450;color:#44564e}.approach-label{font-size:13px;font-weight:600}
+.proactive-proof{max-width:900px}.proactive-proof figcaption{font-size:14px;color:#485b52}
+.method-map{border:1px solid #cedbd4;border-radius:8px;overflow:hidden}
+.method-principles{display:flex;align-items:center;flex-wrap:wrap;gap:18px 30px;background:#f4f7f5;border-bottom:1px solid #d5e0da;padding:20px 27px}
+.method-rail-label{font-size:13px;font-weight:600;color:#566b5f;margin-right:auto}
+.method-principles>span:not(.method-rail-label){display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;color:var(--metric-ink)}
+.method-principles b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--category);font-size:11px;color:white}
+.method-path{display:grid;grid-template-columns:1fr 1.22fr 1fr;gap:39px;list-style:none;margin:0;padding:30px}
+.method-path>li{position:relative;min-width:0;padding:12px 0}
+.method-path>li:not(:last-child)::after{content:'→';position:absolute;top:118px;right:-29px;font-size:25px;color:#65927f}
+.method-stage-number{font-size:14px;font-weight:650;color:#688476;font-variant-numeric:tabular-nums;letter-spacing:.08em}
+.method-path h3{font-size:22px;line-height:1.35;font-weight:650;letter-spacing:-.4px;margin:10px 0 18px}
+.method-path p{font-size:16px;line-height:1.7;color:#43584c;margin:0}
+.method-check-example{display:block;font-size:16px;font-weight:550;line-height:1.6;margin-top:23px;padding:9px 0 9px 14px;border-left:2px solid #85ae9b;color:#2d5845}
+.method-path>li.method-inspection{background:#f2f7f4;border-radius:6px;padding:16px 22px}
+.method-tools{display:grid;gap:13px}.method-tools>span{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:500;color:#2d5845;line-height:1.5}
+.method-tools svg,.evidence-loop svg{width:21px;height:21px;stroke:#34765b;fill:none;stroke-width:1.5;flex:none;stroke-linecap:round;stroke-linejoin:round}
+.evidence-loop{display:flex;align-items:center;gap:11px;border-top:1px dashed #a9c7b6;padding-top:17px;margin-top:22px;color:#42604e;font-size:13px;line-height:1.6}.evidence-loop strong{display:block;font-weight:650;font-size:15px}
+.method-report>div{margin-top:22px}.method-report>div>strong{font-size:17px;font-weight:650;color:#2f5945}.method-report>div>p{font-size:15px;margin-top:6px}
+.method-footer{font-size:14px;font-weight:500;padding-top:19px}.method-boundary{font-size:14px;line-height:1.7;color:#52625b}
+.agreement-results span{font-size:16px;font-weight:500;color:#4c5e54}.study-context{font-size:14px;color:#52625b}.insight-grid h3{font-size:17px;font-weight:600}.insight-grid p{font-size:16px;line-height:1.7;font-weight:450;color:#465a4e}.insight-grid a{font-size:13px;font-weight:500}.revision-copy p{font-size:18px;color:#485b50}.revision-copy .study-context,.revision-chart figcaption{font-size:14px}.paper-report-example summary{font-size:17px;font-weight:600}.paper-report-example p,.paper-report-example a{font-size:14px}.paper-report-example dl{font-size:16px}
+.room-checks-heading{font-size:18px;font-weight:600}.finding-panel .check-inspection>p,.finding-panel .check-diagnosis p{font-size:15px;color:#495d51}.finding-panel .illustration-note,.revision-study-link{font-size:13px;color:#52655a}.diagnosis-facts{font-size:14px}.demo-badge{color:#52655a}.more-examples>h3{font-size:21px;font-weight:650}.more-examples .benchmark-card-copy h3{font-size:18px}.more-examples .benchmark-links{font-size:14px}
+@media(max-width:1150px){
+ .narrative-hero{grid-template-columns:minmax(0,1.2fr) minmax(330px,1fr);gap:35px}.narrative-hero .title-expansion{font-size:30px}.narrative-hero .hero-description{font-size:17px}.narrative-hero>.leaderboard-preview{padding:20px}
+ .evaluation-overview{grid-template-columns:minmax(180px,.65fr) minmax(0,2fr);gap:30px}.evaluation-core{padding:23px}.evaluation-core-title{display:block}.evaluation-core-title>span{display:block;margin-top:8px}.metric-families{gap:15px}.metric-families h4{font-size:15px;align-items:flex-start;min-height:42px}.metric-families ul{font-size:15px}.input-arrow{right:-25px}
+ .evidence-cases{grid-template-columns:1fr;gap:18px}.evidence-cases article{grid-template-columns:190px 1fr}.case-reading dl{grid-template-columns:120px 1fr;gap:9px 12px}.case-reading dd{margin:0}.evidence-cases h3{margin-bottom:14px}
+ .method-principles{gap:16px}.method-rail-label{width:100%;margin-right:0}.method-path{gap:30px;padding:24px}.method-path h3{font-size:20px}.method-path>li:not(:last-child)::after{right:-24px}.method-path>li.method-inspection{padding:15px}.method-tools>span{font-size:14px}.method-path p{font-size:15px}
+}
+@media(max-width:760px){
+ .narrative-hero{grid-template-columns:1fr;gap:28px;padding-block:32px;text-align:left}.narrative-hero .title-grep{font-size:46px}.narrative-hero .title-expansion{font-size:30px;max-width:none;margin:0}.narrative-hero .hero-description{font-size:17px;max-width:none;margin:20px 0 16px}.narrative-hero .research-links{display:flex;justify-content:flex-start;max-width:none;margin:0}.narrative-hero>.leaderboard-preview{max-width:none}.hero-result{margin-bottom:20px}
+ .story-section{padding-block:32px}.story-heading h2,.numbered-section .section-top h2{font-size:28px}.story-heading p,.numbered-section .section-lead{font-size:16px}.story-heading{margin-bottom:22px}
+ .evaluation-overview{grid-template-columns:1fr;gap:27px}.scene-input{display:grid;grid-template-columns:1fr 165px;column-gap:22px;padding:0}.scene-input img{grid-column:2;grid-row:1/4;height:112px}.scene-input h3{font-size:18px;align-self:end}.scene-input p{font-size:14px;margin:0}.scene-input>span:not(.input-arrow){font-size:14px;margin:3px 0 0}.input-arrow{content:'';font-size:0;left:50%;right:auto;top:auto;bottom:-26px}.input-arrow::after{content:'↓';font-size:23px}.evaluation-core-title{display:flex}.evaluation-core-title h3{font-size:27px}.evaluation-core-title>span{margin:0}.metric-families h4{font-size:16px}.metric-families ul{font-size:16px}
+ .evidence-cases article{padding:18px;gap:22px;grid-template-columns:160px 1fr}.evidence-cases article>a.case-thumbnail{height:160px;width:160px}.case-reading dl{display:block;font-size:15px}.case-reading dt{margin-bottom:3px}.case-reading dd{margin-bottom:10px}.case-reading dd:last-child{margin:0}
+ .approach-grid{grid-template-columns:1fr;gap:18px}.approach-grid h3{font-size:22px}.approach-grid p{font-size:16px}.proactive-proof figcaption{font-size:13px}
+ .method-principles{display:grid;grid-template-columns:1fr;gap:12px;padding:20px}.method-rail-label{font-size:12px;margin-bottom:4px}.method-principles>span:not(.method-rail-label){font-size:16px}.method-path{grid-template-columns:1fr;gap:34px;padding:22px}.method-path>li{padding:0}.method-path>li:not(:last-child)::after{content:'↓';right:50%;top:auto;bottom:-29px}.method-path>li.method-inspection{padding:22px}.method-path h3{font-size:22px;margin:8px 0 12px}.method-path p{font-size:16px}.method-check-example{margin-top:15px}.method-tools>span{font-size:16px}.method-report>div{margin-top:15px}.method-report>div>p{font-size:15px}.method-footer{font-size:13px;line-height:1.7}.method-boundary{font-size:13px}
+ .study-context{font-size:13px}.insight-grid p{font-size:15px}.revision-copy p{font-size:16px}.revision-copy .study-context{font-size:13px}.paper-report-example dl{font-size:15px}.paper-report-example p{font-size:13px}
+}
+@media(max-width:500px){
+ .nav-links{font-size:13px;gap:16px}
+ .narrative-hero .title-expansion{font-size:28px}.narrative-hero .hero-description{font-size:16px}.narrative-hero .research-links a{font-size:14px;padding-inline:14px}.narrative-hero>.leaderboard-preview{padding:18px}.leaderboard-preview table{font-size:14px}.preview-scope button{font-size:12px}.preview-heading h2{font-size:20px}.preview-heading h2>span{font-size:11px}.preview-heading .paper-cite{font-size:11px}.hero-result{font-size:14px}.hero-result>span{font-size:13px}
+ .story-heading h2,.numbered-section .section-top h2{font-size:26px}.section-number{margin-right:4px}.scene-input{grid-template-columns:1fr 112px;gap:2px 15px}.scene-input h3{font-size:17px}.scene-input p{font-size:12px;line-height:1.8}.scene-input img{height:105px}.scene-input>span:not(.input-arrow){font-size:13px}
+ .evaluation-core{padding:22px 19px}.evaluation-core-title{display:block;margin-bottom:21px}.evaluation-core-title h3{font-size:27px}.evaluation-core-title>span{margin-top:7px;font-size:13px}.metric-families{grid-template-columns:1fr;gap:20px}.metric-families h4{margin-bottom:8px;font-size:17px;min-height:0}.metric-families ul{display:flex;flex-wrap:wrap;gap:3px 15px;font-size:15px;line-height:1.65}.evaluation-outputs{grid-template-columns:1fr;gap:17px}.evaluation-outputs strong{font-size:17px}.evaluation-outputs span{font-size:14px}
+ .evidence-cases article{grid-template-columns:110px minmax(0,1fr);gap:15px;padding:16px;align-items:start}.evidence-cases article>a.case-thumbnail{width:110px;height:110px;margin-top:24px}.case-label{font-size:11px;margin-bottom:6px}.evidence-cases h3{font-size:18px;line-height:1.4;margin-bottom:13px}.case-reading dl{font-size:14px;line-height:1.6}.case-reading dt{font-size:12px}.case-reading dd{margin-bottom:12px}.section-source,.paper-cite{font-size:12px}
+ .method-principles{padding:19px}.method-path{padding:19px}.method-path>li.method-inspection{padding:20px}.method-path h3{font-size:21px}.method-tools>span{font-size:15px}.method-check-example{font-size:15px}
+ .agreement-results span{font-size:12px}.finding-panel .check-inspection>p,.finding-panel .check-diagnosis p{font-size:14px}.diagnosis-facts{font-size:13px}.more-examples .benchmark-card-copy h3{font-size:16px}.more-examples .benchmark-links{font-size:13px}
+}
+@media(max-width:360px){.nav-wrap{padding-inline:18px;gap:12px}.nav-links{font-size:11.5px;gap:13px}.narrative-hero .title-expansion{font-size:26px}}
+
+/* Hero strip: one paper example per principle */
+.hero-strip{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:6px}
+.hero-strip a{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:7px;background:#fff;color:inherit;overflow:hidden;transition:border-color .15s,box-shadow .15s}
+.hero-strip a:hover{border-color:var(--category);box-shadow:0 4px 16px #233a2c0d}
+.hero-strip img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;background:#f1f3f2}
+.hero-strip-copy{display:block;padding:13px 15px 15px;font-size:14px;line-height:1.5;color:#3f514a}
+.hero-strip-tag{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:650;color:var(--category);margin-bottom:5px}
+.hero-strip-tag b{display:grid;place-items:center;width:19px;height:19px;border-radius:50%;background:var(--category);color:#fff;font-size:10px}
+@media(max-width:900px){.hero-strip{grid-template-columns:1fr;gap:10px}.hero-strip a{display:grid;grid-template-columns:128px minmax(0,1fr);align-items:center}.hero-strip img{height:96px;aspect-ratio:auto}.hero-strip-copy{padding:10px 14px}}
+@media(max-width:420px){.hero-strip a{grid-template-columns:104px minmax(0,1fr)}.hero-strip img{height:78px}.hero-strip-copy{font-size:13px}}
+
+/* Section 2: show the paper crops large enough to read */
+.evidence-cases{grid-template-columns:repeat(2,minmax(0,1fr))}
+.evidence-cases article{display:flex;flex-direction:column;align-items:stretch;gap:18px}
+.evidence-cases article>a.case-thumbnail{width:100%;height:auto;aspect-ratio:2/1;margin:0;background:#f3f4f6}
+.evidence-cases article>a.case-thumbnail img{width:100%;height:100%;object-fit:contain}
+@media(max-width:900px){.evidence-cases{grid-template-columns:1fr}.evidence-cases article{padding:16px}.evidence-cases article>a.case-thumbnail{width:100%;height:auto;margin:0}}
