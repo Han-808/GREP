@@ -73,8 +73,20 @@ four unmodified crops. Clicking a figure opens its vector version.
 What GREP does gives most of its width to evaluation: three principles, eight
 metrics, and score/report outputs. Principles and workflow uses a connected native
 diagram with a visible evidence-acquisition loop; Figure 2 stays linked. The same
-A–C tags identify interactive checks.
+A–C tags identify interactive checks. Principles feed the room-specific checks;
+the evidence decision separates judgment from further inspection, with unresolved
+gaps retained when the inspection budget is reached.
 Preserve the `Human-Use` label in surrounding copy.
+
+The hero links directly to the room demo and scopes its rounded human-agreement
+result to 15 scene pairs. Its three thumbnail questions introduce the principles;
+the full comparator judgments appear once in Why.
+
+`room-loader.js` owns loading recovery independently of the 3D module. A 20-second
+delay shows a static preview and retry while the pending load continues; it is not
+treated as a missing asset. Successful late loads replace the poster. Module,
+asset or WebGL failures retain the poster and disable unavailable room controls.
+Retry reloads the page to avoid duplicate renderers and event listeners.
 
 The contribution comparisons are scoped to the paper's Figure 1 examples, with
 specific comparator outcomes and source links. Do not generalize these examples

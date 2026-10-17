@@ -168,7 +168,7 @@ $('annotations-btn').addEventListener('click', () => {
 
 function failGracefully(error) {
   console.error('GREP scene preview:', error);
-  $('loading-state').hidden = true; $('webgl-fallback').hidden = false;
+  window.dispatchEvent(new Event('grep:room-error'));
   $('hotspots').hidden = true; $('room-canvas').hidden = true;
   stage.dataset.ready = 'unavailable';
   for (const id of ['focus-btn','door-test-btn','adjust-finding-btn','overview-btn','top-btn','reset-btn','annotations-btn']) $(id).disabled = true;
@@ -179,6 +179,7 @@ createRoom().then(api => {
   sceneAPI = api; updateCopy();
   if (adjusted) sceneAPI.setAdjusted(true);
   sceneAPI.select(selected, false);
+  window.dispatchEvent(new Event('grep:room-ready'));
 }).catch(failGracefully);
 
 async function createRoom() {
@@ -217,7 +218,7 @@ async function createRoom() {
     const object=new THREE.Mesh(geometry,material);object.position.set(x,y,z);parent.add(object);return object;
   }
   const {chair,table,lamp,desk,desktop,sofa,rug,cabinet,ottoman,rig,route,cabinetMechanism}=await buildRealisticRoom(scene,renderer,(count,total)=>{
-    $('loading-state').querySelector('strong').textContent=`Loading the room · ${count}/${total}`;
+    if(stage.dataset.loadState==='loading')$('room-loading-title').textContent=`Loading the room · ${count}/${total}`;
   });
 
   const highlights=new THREE.Group();scene.add(highlights);

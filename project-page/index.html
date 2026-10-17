@@ -10,10 +10,10 @@
   <link rel="stylesheet" href="./assets/framework.css?v=78320c5a17cc">
   <link rel="stylesheet" href="./assets/inspection-controls.css?v=52cafac40faa">
   <link rel="stylesheet" href="./assets/home-story.css?v=846b860649f8">
-  <link rel="stylesheet" href="./assets/evidence-story.css?v=aef0beb20455">
+  <link rel="stylesheet" href="./assets/evidence-story.css?v=2b0380e2bc8f">
   <script defer src="./assets/home-leaderboard.js?v=9552f07ac773"></script>
   <script type="importmap">{"imports":{"three":"./assets/vendor/three.module.js?v=9052042d676c"}}</script>
-  <script type="module" src="./assets/room-demo.js?v=1b05801adfa4"></script>
+  <script defer src="./assets/room-loader.js?v=c1fd60f27970" data-module="./assets/room-demo.js?v=fba1f49df61a"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -26,10 +26,11 @@
     <section class="hero narrative-hero page-width" data-home-section="Hero" aria-labelledby="page-title">
       <div class="hero-copy">
         <h1 id="page-title"><span class="title-grep">GREP</span><span class="title-expansion">Grounding Generated Room<br class="desktop-break"> Evaluation in Principles</span></h1>
-        <p class="hero-description">GREP evaluates generated 3D rooms through <strong>Physical Validity</strong>, <strong>Visual Coherence</strong>, and <strong>Human-Use</strong>—and grounds its judgments in scene evidence.</p><a class="hero-result" href="#results"><strong>87%</strong> agreement with human preferences <span>vs 62% for a holistic VLM ↗</span></a>
+        <p class="hero-description">GREP evaluates generated 3D rooms through <strong>Physical Validity</strong>, <strong>Visual Coherence</strong>, and <strong>Human-Use</strong>—and grounds its judgments in scene evidence.</p><a class="hero-result" href="#results"><strong>87%</strong> agreement with human preferences across <b>15 scene pairs</b> <span>vs 62% for a holistic VLM ↗</span></a>
         <nav class="research-links" aria-label="Research resources">
         <a id="paper-link" href="./paper/GREP.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg><span>Paper</span></a>
 
+        <a class="try-demo-link" href="#interactive-demo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 12 7-12 7z"/></svg><span>Try GREP ↓</span></a>
         <a href="./scene_liveboard.html?scope=open-space"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Examples</span></a>
         <a href="./leaderboard.html?scope=open-space"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20V10h5v10M9 20V4h6v16M15 20v-7h5v7M2 20h20"/></svg><span>Leaderboard</span></a>
       </nav>
@@ -43,10 +44,10 @@
           <a id="leaderboard-preview-link" class="preview-full-link" href="./leaderboard.html?scope=open-space">Full leaderboard ↗</a>
           <noscript><p>Open the full leaderboard to view the paper scores.</p></noscript>
         </aside>
-      <div class="hero-strip" aria-label="One judgment per principle, from the paper's Figure 1">
-        <a class="physical" href="#why"><img src="./assets/figures/grep-hero-physical.jpg?v=2" width="640" height="480" alt="A sofa resting on a rug, with the contact circled"><span class="hero-strip-copy"><span class="hero-strip-tag"><b>A</b> Physical Validity</span>The sofa–rug contact is intended, not a collision.</span></a>
-        <a class="visual" href="./assets/figures/grep-evidence-visual.pdf" target="_blank" rel="noopener"><img src="./assets/figures/grep-hero-visual.jpg?v=2" width="640" height="480" alt="A pair of oversized shoes circled on the floor of a generated room"><span class="hero-strip-copy"><span class="hero-strip-tag"><b>B</b> Visual Coherence</span>The geometry is fine, but the shoes are 1.8 m long.</span></a>
-        <a class="human" href="#why"><img src="./assets/figures/grep-hero-human-use.jpg?v=2" width="640" height="480" alt="Two pairs of chairs facing each other with almost no gap"><span class="hero-strip-copy"><span class="hero-strip-tag"><b>C</b> Human-Use</span>Facing chairs 0.16 m apart leave no room to sit.</span></a>
+      <div class="hero-strip" aria-label="Three questions GREP asks about a room">
+        <a class="physical" href="#why"><img src="./assets/figures/grep-hero-physical.jpg?v=2" width="640" height="480" alt="A sofa resting on a rug, with the contact circled"><span class="hero-strip-copy"><span class="hero-strip-tag"><b>A</b> Physical Validity</span>Is the contact intended?</span></a>
+        <a class="visual" href="./assets/figures/grep-evidence-visual.pdf" target="_blank" rel="noopener"><img src="./assets/figures/grep-hero-visual.jpg?v=2" width="640" height="480" alt="A pair of oversized shoes circled on the floor of a generated room"><span class="hero-strip-copy"><span class="hero-strip-tag"><b>B</b> Visual Coherence</span>Is the scale plausible?</span></a>
+        <a class="human" href="#why"><img src="./assets/figures/grep-hero-human-use.jpg?v=2" width="640" height="480" alt="Two pairs of chairs facing each other with almost no gap"><span class="hero-strip-copy"><span class="hero-strip-tag"><b>C</b> Human-Use</span>Can people use it?</span></a>
       </div>
     </section>
 
@@ -78,13 +79,13 @@
     <section class="method story-section numbered-section page-width" id="method" data-home-section="Principles and workflow" aria-labelledby="method-title">
 <div class="story-heading"><h2 id="method-title"><span class="section-number">4.</span> From principles to judgments</h2><p>The principles guide what to check. The evidence determines the judgment.</p></div>
 <div class="method-map">
-  <div class="method-principles" id="principles"><span class="method-rail-label">Guiding principles</span><span class="physical" id="principle-physical"><b>A</b> Physical Validity</span><span class="visual" id="principle-visual"><b>B</b> Visual Coherence</span><span class="human" id="principle-human-use"><b>C</b> Human-Use</span></div>
+
   <ol class="method-path">
-    <li class="method-checks"><span class="method-stage-number">01</span><h3>Formulate checks</h3><p>Identify the objects and relationships that need inspection in this room.</p><span class="method-check-example">Can the cabinet door open fully?</span></li>
-    <li class="method-inspection"><span class="method-stage-number">02</span><h3>Inspect &amp; judge</h3><div class="method-tools"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v10H3zM7 7v5M12 7v3M17 7v5"/></svg>Measure geometry</span><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zM4 17l6-6 4 4 3-3 4 4"/><circle cx="8" cy="8" r="1"/></svg>Retrieve existing views</span><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h12v12H3zM15 11l6-4v12l-6-4M6 7V4h6v3"/></svg>Render new views</span></div><div class="evidence-loop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10a8 8 0 1 1 0 5M4 4v6h6"/></svg><span>Need more evidence?<strong>Inspect again.</strong></span></div></li>
+    <li class="method-checks"><span class="method-stage-number">01</span><h3>Formulate checks</h3>  <div class="method-principles" id="principles"><span class="method-rail-label">Guided by the principles</span><span class="physical" id="principle-physical"><b>A</b> Physical Validity</span><span class="visual" id="principle-visual"><b>B</b> Visual Coherence</span><span class="human" id="principle-human-use"><b>C</b> Human-Use</span></div><span class="principles-feed" aria-hidden="true">↓</span><p>Identify the objects and relationships that need inspection in this room.</p><span class="method-check-example">Can the cabinet door open fully?</span></li>
+    <li class="method-inspection"><span class="method-stage-number">02</span><h3>Inspect &amp; judge</h3><div class="method-tools"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v10H3zM7 7v5M12 7v3M17 7v5"/></svg>Measure geometry</span><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3zM4 17l6-6 4 4 3-3 4 4"/><circle cx="8" cy="8" r="1"/></svg>Retrieve existing views</span><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h12v12H3zM15 11l6-4v12l-6-4M6 7V4h6v3"/></svg>Render new views</span></div><div class="evidence-decision"><strong>Evidence sufficient?</strong><div class="decision-branches"><div class="decision-no"><b>No <svg viewBox="0 0 26 27" aria-hidden="true"><path d="M23 23H10a6 6 0 0 1-6-6V9a5 5 0 0 1 5-5h9M13 1l5 3-5 4"/></svg></b><span>Acquire more evidence<br>and inspect again</span></div><div class="decision-yes"><b>Yes →</b><span>Make a judgment</span></div></div></div><p class="budget-route">Budget reached? Record the unresolved gap.</p></li>
     <li class="method-report"><span class="method-stage-number">03</span><h3>Score &amp; diagnose</h3><div><strong>Scores</strong><p>Overall · Principles · Metrics</p></div><div><strong>Diagnosis</strong><p>Affected objects · Reasons · Evidence</p></div></li>
   </ol>
-</div><div class="method-footer"><a href="#interactive-demo">Follow a check in the room ↓</a><a href="./assets/figures/grep-framework.pdf" target="_blank" rel="noopener">Original framework · Figure 2 ↗</a></div><p class="method-boundary">Inspection ends when evidence is sufficient or the budget is reached. Unresolved gaps stay in the report.</p></section>
+</div><div class="method-footer"><a href="#interactive-demo">Follow a check in the room ↓</a><a href="./assets/figures/grep-framework.pdf" target="_blank" rel="noopener">Original framework · Figure 2 ↗</a></div></section>
 
     <section data-home-section="Interactive case" id="interactive-demo" class="demo-section numbered-section page-width" aria-labelledby="demo-heading">
       <div class="section-top"><div><h2 id="demo-heading"><span class="section-number">5.</span> Inspect the room</h2><p class="section-lead">Choose a check, inspect its evidence, and follow the diagnosis. The A–C tags match the principles above.</p></div><span class="demo-badge"><span></span> Illustrative scene, not a benchmark output</span></div>
@@ -99,9 +100,9 @@
         <div class="scene-column">
           <div class="scene-toolbar"><div class="scene-label">Living room <span>· Wall-free</span></div><div class="scene-controls"><button id="tour-btn" class="tour-button" aria-pressed="false" disabled><span id="tour-icon" aria-hidden="true">▶</span><span id="tour-label">Walkthrough</span></button><div class="segmented" aria-label="Scene version"><button id="original-btn" class="selected" aria-pressed="true">Original</button><button id="adjusted-btn" aria-pressed="false">Revised placement</button></div></div></div>
           <div id="scene-stage" class="scene-stage" tabindex="0" role="region" aria-label="Interactive 3D room. Drag to rotate, scroll to zoom. Arrow keys rotate; plus and minus zoom. Use the check buttons to inspect the three findings.">
+            <img id="room-poster" class="room-poster" src="./assets/figures/room-preview.jpg" width="889" height="729" loading="lazy" alt="Static preview of the illustrative living room with a sofa, desk and cabinet">
             <canvas id="room-canvas" aria-label="3D living-room demonstration"></canvas>
-            <div id="loading-state" class="loading-state"><span class="loading-orbit"></span><strong>Preparing the room</strong></div>
-            <div id="webgl-fallback" class="webgl-fallback" hidden><strong>3D preview is unavailable in this browser.</strong><p>The three findings remain available in the panel. Try a browser with WebGL enabled to rotate the room.</p></div>
+            <div id="loading-state" class="loading-state" role="status" aria-live="polite"><span class="loading-orbit" aria-hidden="true"></span><strong id="room-loading-title">Preparing the room</strong><p id="room-loading-note">The interactive view will appear when loading finishes.</p><button id="retry-room" type="button" hidden>Retry loading</button></div>
             <div id="hotspots" class="hotspots" aria-label="The three room checks"><button class="hotspot physical" data-finding="collision" aria-label="Physical Validity: is the sofa–rug contact a defect?"><span>A</span></button><button class="hotspot visual" data-finding="scale" aria-label="Visual Coherence: is the lamp reasonably sized for this desk?"><span>B</span></button><button class="hotspot human" data-finding="access" aria-label="Human-Use: can the cabinet door open fully?"><span>C</span></button></div>
             <div id="camera-label" class="camera-label"><svg viewBox="0 0 20 16" aria-hidden="true"><path d="M2 4h10v10H2zM12 7l6-3v10l-6-3M5 4V2h4v2"/></svg><span>GREP camera</span></div>
             <div class="scene-caption"><span id="scene-version-label">Original arrangement</span><span id="scene-hint">Drag to orbit · Scroll to zoom</span></div>
