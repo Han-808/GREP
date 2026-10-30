@@ -37,8 +37,8 @@ def build(source, pdf):
     if source.get('schema_version') != 1 or source.get('data_kind') != 'paper_table1_model_averages':
         raise ValueError('Unsupported paper-average source schema.')
     provenance = source['source']
-    if (provenance.get('score_table'), provenance.get('score_page'), provenance.get('count_page')) != (1, 6, 18):
-        raise ValueError('Expected Table 1 on PDF page 6 and populations on page 18.')
+    if (provenance.get('score_table'), provenance.get('score_page'), provenance.get('count_page')) != (1, 6, 20):
+        raise ValueError('Expected Table 1 on PDF page 6 and populations on page 20.')
     if hashlib.sha256(pdf.read_bytes()).hexdigest() != provenance['sha256']:
         raise ValueError('The public PDF differs from the version pinned by paper-table1.json.')
     if [board['id'] for board in source['leaderboard_views']] != list(MODEL_KEYS):

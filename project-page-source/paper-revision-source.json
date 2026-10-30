@@ -1,16 +1,17 @@
 {
   "source": "paper/GREP.pdf",
-  "source_sha256": "f6decf8c90c264c39528fba2788845b4a11bc99c63c4b900fcff82683690b458",
+  "source_sha256": "6b7e0b754dd9f74a2e48822a8dc672634cecafef64795821c505b22bde3155f1",
   "page": 9,
   "figure": "5(a)",
-  "crop_pdf_points": [
-    108.1551724137931,
-    582.384,
-    281.7310344827586,
-    712.272
-  ],
   "pdf": "assets/figures/grep-revision-curve.pdf",
   "png": "assets/figures/grep-revision-curve.png",
-  "png_sha256": "5ba6c258836b29c73d88eada37020ed6386f9e1d46a0232625079f9fb0ef777e",
-  "method": "Original page artwork clipped without relabeling or redrawing; Poppler 450 dpi."
+  "png_sha256": "ba4c0522d079f2fa0eec6b1a8970a3d58db3530f870a85b4375fe0a690ecf7a3",
+  "method": "Left panel of the revised Figure 5 (Table 10 means with +/-1 SE bands), clipped without further editing; PyMuPDF 2.0 (MuPDF 1.28.5), PNG, 450 dpi.",
+  "figure_source": "figures/grep_refinement.pdf",
+  "crop_figure_top_left_pt": [
+    0,
+    0,
+    172,
+    132
+  ]
 }

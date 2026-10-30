@@ -3,7 +3,7 @@
   "crops": [
     {
       "source": "assets/figures/grep-evidence-physical.pdf",
-      "source_sha256": "dd1484af182842646cd6fde5c1767fd4e8088348893b6ed471090f66b0c13888",
+      "source_sha256": "7bb327b35fc972051f855e0417fb7fcaa04e5ac58a2f40fe4a422e60c29605ed",
       "crop_pdf_pt": [
         2.1589595375722546,
         36.70766129032258,
@@ -12,11 +12,11 @@
       ],
       "pdf": "assets/figures/grep-contact-scene.pdf",
       "png": "assets/figures/grep-contact-scene.png",
-      "png_sha256": "61e212bca69d3d08d0a99345f71703321e074846bd5ffd17ad81ec2d1d9a51d1"
+      "png_sha256": "af6c602703446215cdcd97a16e52a9ea084eb232ac77ca005a0805dff04c3fb7"
     },
     {
       "source": "assets/figures/grep-evidence-human-use.pdf",
-      "source_sha256": "cecad02ca2524586b1e16c759792899ec74f0c1a5cbb855b89cbc7c786b988b6",
+      "source_sha256": "545ba34b65cfcabc17218ef07204999a272c8a301729e5629e809958b0f9a37a",
       "crop_pdf_pt": [
         113.25628140703517,
         83.04,
@@ -25,7 +25,7 @@
       ],
       "pdf": "assets/figures/grep-chair-gap.pdf",
       "png": "assets/figures/grep-chair-gap.png",
-      "png_sha256": "9956fbab2e5c07a91513f871fe8d61dbe3f3346ee0da040c13fa1760643e9636"
+      "png_sha256": "09899fec8564aa1e581511d8fa9601099d30265ddb4ecdd88f8300a936902554"
     }
   ]
 }

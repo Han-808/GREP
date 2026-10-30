@@ -70,6 +70,10 @@ principled, adaptive discovery from proactive evidence. `assets/figures/` contai
 vector figures and web PNGs. `paper-framework-source.json` records Figure 2
 provenance; `paper-evidence-source.json` records the full Figure 1 teaser and its
 four unmodified crops. Clicking a figure opens its vector version.
+The hosted PDF is the revised preprint build. Whenever it changes, regenerate
+these paper-derived images from the recorded coordinates, update the hashes in the
+`paper-*.json` records, and recheck every `GREP.pdf#page=` link; appendix pages
+moved when the preprint replaced the review layout.
 What GREP does gives most of its width to evaluation: three principles, eight
 metrics, and score/report outputs. Principles and workflow uses a connected native
 diagram with a visible evidence-acquisition loop; Figure 2 stays linked. The same
@@ -133,3 +137,14 @@ current object IDs, and the local asset dependency closure. Pass an empty output
 directory with `--output`; `--website`, `--snapshot`, `--audit`, and
 `--editable-output` are also supported. Raw experiment archives and credentials
 are not part of the website.
+
+## Guided room interaction
+
+`inspection-guide.css` owns the guided room component. A single current question
+and a three-stage progress strip connect it to the framework above. The evidence
+panel exposes one primary action at a time; on phones it precedes the room overview.
+After a cabinet diagnosis, Compare revised placement runs the same actual evidence
+and clearance operations automatically and retains both measured results. The
+comparison does not hardcode opening angles or resize objects. Selecting the cabinet
+again starts in the original arrangement; selecting another check cancels an ongoing
+comparison. Keep loading recovery and the illustrative-scene label intact.

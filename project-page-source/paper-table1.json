@@ -3,15 +3,10 @@
   "data_kind": "paper_table1_model_averages",
   "source": {
     "pdf": "paper/GREP.pdf",
-    "sha256": "f6decf8c90c264c39528fba2788845b4a11bc99c63c4b900fcff82683690b458",
+    "sha256": "6b7e0b754dd9f74a2e48822a8dc672634cecafef64795821c505b22bde3155f1",
     "score_table": 1,
     "score_page": 6,
-    "count_page": 18,
-    "count_line_numbers": [
-      960,
-      961,
-      962
-    ]
+    "count_page": 20
   },
   "leaderboard_views": [
     {

@@ -1,6 +1,6 @@
 {
   "source": "paper/GREP.pdf",
-  "source_sha256": "f6decf8c90c264c39528fba2788845b4a11bc99c63c4b900fcff82683690b458",
+  "source_sha256": "6b7e0b754dd9f74a2e48822a8dc672634cecafef64795821c505b22bde3155f1",
   "page": 4,
   "figure": 2,
   "form_xobject": "/Im2",
@@ -10,6 +10,7 @@
     396,
     192
   ],
-  "extraction": "Original PDF Form XObject, without relabeling or redrawing.",
-  "web_render": "Poppler pdftoppm, 450 dpi, PNG"
+  "extraction": "Figure 2 artwork of the revised paper, without further editing.",
+  "web_render": "PyMuPDF 2.0 (MuPDF 1.28.5), PNG, 450 dpi",
+  "figure_source": "figures/grep_framework.pdf"
 }

@@ -1,6 +1,6 @@
 {
   "source": "paper/GREP.pdf",
-  "source_sha256": "f6decf8c90c264c39528fba2788845b4a11bc99c63c4b900fcff82683690b458",
+  "source_sha256": "6b7e0b754dd9f74a2e48822a8dc672634cecafef64795821c505b22bde3155f1",
   "page": 1,
   "figure": 1,
   "form_xobject": "/Im1",
@@ -11,8 +11,8 @@
     498.95999
   ],
   "full_vector_figure": "assets/figures/grep-figure1.pdf",
-  "extraction": "Original PDF Form XObject, clipped to rectangular panel bounds without relabeling, redrawing, or raster retouching.",
-  "web_render": "Poppler pdftoppm, PNG; 600 dpi for the three principle crops and 300 dpi for the wider proactive-evidence panel.",
+  "extraction": "Figure 1 artwork of the revised paper, clipped to the recorded panel bounds without further editing.",
+  "web_render": "PyMuPDF 2.0 (MuPDF 1.28.5), PNG; 600 dpi for the three principle crops and 300 dpi for the wider proactive-evidence panel.",
   "interpretation": "As explained in the original Figure 1 caption, check and cross marks indicate whether each evaluator output matches the actual scene state, not whether the scene passes.",
   "panels": [
     {
@@ -35,7 +35,7 @@
       "render_dpi": 600,
       "width": 1384,
       "height": 992,
-      "png_sha256": "9a640b211fa6b2fe50c5262fe67ca3cc3f7d542441dd045100dc7d3113145ada"
+      "png_sha256": "7f01f829d501c414e418e2e1bb0660d42d25737fd021285e2414d80d2b4a8d5a"
     },
     {
       "id": "grep-evidence-visual",
@@ -57,7 +57,7 @@
       "render_dpi": 600,
       "width": 1592,
       "height": 1450,
-      "png_sha256": "3b4fd8ec381297d4ff80ed2eefbac59ce219973fdcefcbad57f12f22dd0c7a27"
+      "png_sha256": "4667542c7c21b758aa6130272da1e269002fa0167a376aaf9fe857800efa6a24"
     },
     {
       "id": "grep-evidence-human-use",
@@ -79,7 +79,7 @@
       "render_dpi": 600,
       "width": 1592,
       "height": 1450,
-      "png_sha256": "0016747d6595d989650b441047d03e3337caa8dea720ec38fc18fe6642cb9709"
+      "png_sha256": "144b63cbdebaa54083e663d1b6d81f7861eda6c7096e39287624c887fd177061"
     },
     {
       "id": "grep-evidence-proactive",
@@ -101,17 +101,19 @@
       "render_dpi": 300,
       "width": 1600,
       "height": 621,
-      "png_sha256": "682e342c7f0742267df31c0133114b6bcb3d71a7fb11db2dc456d06b03f4d27c"
+      "png_sha256": "0906d0f3bcbd9a87bc2f995f94e250e939750a8c76ee0378fe22c3230b85c6e5"
     }
   ],
   "full_figure_render": {
     "pdf": "assets/figures/grep-figure1.pdf",
-    "pdf_sha256": "595823b486de80f18903d57b40039074855914e58f5851691ca90cb4ad62b91d",
+    "pdf_sha256": "528a3928116e4017aba274468950e42aa22017788475ec122d537c966e236810",
     "png": "assets/figures/grep-figure1.png",
-    "render": "Poppler pdftoppm -png -singlefile -r 450; full existing Figure 1 Form XObject extraction, with no cropping, relabeling, redrawing, or raster retouching.",
+    "render": "PyMuPDF 2.0 (MuPDF 1.28.5), PNG at 450 dpi; full revised Figure 1, no cropping or further editing.",
     "render_dpi": 450,
     "width": 2475,
     "height": 3119,
-    "png_sha256": "bf3399beb446043548605b41929968214a135d465cab9b1c7febf806897c459c"
-  }
+    "png_sha256": "d3533d88b37fcabde8ad27ff24ecc19ebc424e002b5d89badd3da8c8c1200e01"
+  },
+  "figure_source": "figures/grep_teaser.pdf",
+  "figure_source_sha256": "afba280a3c48b6af861812c11295d1d96caf805f06b1cbbf8f8f6f45525837d2"
 }

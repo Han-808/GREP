@@ -1,0 +1,95 @@
+/* A single guided check, with room context and evidence as peer views. */
+#interactive-demo .inspection-guide{display:flex;align-items:center;justify-content:space-between;gap:28px;padding:24px 28px;border:1px solid #d5e1db;border-bottom:0;border-radius:8px 8px 0 0;background:#f6f9f7}
+#guide-principle{font-size:13px;font-weight:650}
+#interactive-demo .guide-question .check-question{border:0;padding:0;margin:0}
+#interactive-demo .guide-question .check-step{display:none}
+#interactive-demo #check-question{margin:8px 0 0;font-size:24px;line-height:1.4;font-weight:600;color:#223c32}
+#interactive-demo .guide-progress{display:flex;align-items:center;gap:22px;list-style:none;padding:0;margin:0;flex-shrink:0}
+#interactive-demo .guide-progress li{display:flex;align-items:center;gap:7px;color:#809089;font-size:12px;max-width:135px;line-height:1.4}
+#interactive-demo .guide-progress b{display:grid;place-items:center;border:1px solid #c8d9d0;border-radius:50%;width:25px;height:25px;flex:none;font-size:12px}
+#interactive-demo .guide-progress li[data-state=current]{color:#216b61;font-weight:650}
+#interactive-demo .guide-progress li[data-state=current] b{background:#267b72;color:white;border-color:#267b72}
+#interactive-demo .guide-progress li[data-state=done]{color:#46665b}
+#interactive-demo .demo-shell{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:stretch;border-radius:0 0 8px 8px;box-shadow:none}
+#interactive-demo .scene-column{min-width:0;background:#f9fbfa;align-self:start;position:sticky;top:16px}
+#interactive-demo .scene-stage{height:580px;min-height:0;flex:none}
+#interactive-demo .scene-toolbar{min-height:62px;height:auto;padding:13px 18px;flex-wrap:wrap}
+#interactive-demo .scene-label{font-size:14px}
+#interactive-demo .scene-label span{font-size:12px}
+#interactive-demo .scene-controls{width:auto}
+#interactive-demo .tour-button{font-size:12px;min-height:34px;padding:7px 10px}
+#interactive-demo .scene-bottom{height:auto;min-height:52px;padding:9px 12px;gap:8px;flex-wrap:wrap}
+#interactive-demo .view-buttons button,#interactive-demo .annotation-toggle{font-size:12px}
+#interactive-demo .finding-panel{min-width:0;padding:18px 22px;border-left:1px solid #dce4df}
+#interactive-demo .panel-heading{padding:0 0 14px;margin:0;border:0}
+#interactive-demo .panel-heading h3{font-size:15px;font-weight:600;margin:0}
+#interactive-demo .panel-heading>span{font-size:12px}
+#interactive-demo .finding-panel [data-eval-step]{display:block;padding:0;margin:0;border:0}
+#interactive-demo .finding-panel [data-eval-step]::before{display:none}
+#interactive-demo .finding-panel .check-step{display:none}
+#interactive-demo .check-inspection .evidence-image{position:relative;grid-area:auto;width:100%;height:auto;aspect-ratio:4/3;border-radius:5px;margin:0 0 16px;background:#363739}
+#interactive-demo .evidence-image canvas{position:absolute;inset:0;width:100%;height:100%}
+#interactive-demo #check-evidence{font-size:15px;line-height:1.6;margin:0 0 12px;min-height:0;color:#41594d}
+#interactive-demo .evidence-operations{gap:6px;margin:0 0 12px}
+#interactive-demo .evidence-operations>span{font-size:11px;padding:5px 8px}
+#interactive-demo .evidence-actions{display:block;padding:0}
+#interactive-demo .inspection-action{min-height:48px;font-size:15px;padding:12px 16px;border-radius:5px}
+#interactive-demo .inspection-action.is-next{box-shadow:none}
+#interactive-demo .inspection-action:disabled{background:#edf2ef;color:#677c71}
+#interactive-demo .evidence-detail{padding:0;margin-top:13px}
+#interactive-demo .detail-kicker{margin:0 0 5px}
+#interactive-demo .issue-status{font-size:11px;font-weight:600}
+#interactive-demo .evidence-detail h4{font-size:17px;line-height:1.4;margin:0}
+#interactive-demo .illustration-note{font-size:11px;margin:10px 0 0;line-height:1.5}
+#interactive-demo #door-result{font-size:15px;font-weight:650;margin:12px 0 0;color:#276c60}
+#interactive-demo #diagnosis-content{margin-top:15px;padding-top:14px;border-top:1px solid #dce6df}
+#interactive-demo .diagnosis-label{display:none}
+#interactive-demo .diagnosis-objects{font-size:13px;font-weight:600}
+#interactive-demo #diagnosis-result{font-size:14px;line-height:1.6;margin:7px 0}
+#interactive-demo .diagnosis-facts{font-size:12px;margin:9px 0;grid-template-columns:55px 1fr;gap:6px 10px}
+#interactive-demo .revision-action{margin-top:14px}
+#interactive-demo .revision-study-link{font-size:11px;margin-top:10px}
+#interactive-demo .inspection-followup{display:flex;align-items:center;gap:14px;margin-top:15px;flex-wrap:wrap}
+#interactive-demo #next-check-btn{width:auto;flex:1}
+#interactive-demo .restart-check{border:0;background:transparent;padding:10px 0;font-size:12px;color:#527264;text-decoration:underline;text-underline-offset:3px}
+#interactive-demo #revision-comparison{margin-top:16px;padding:16px;background:#f1f7f4;border:1px solid #c5dcd0;border-radius:5px}
+#interactive-demo .comparison-heading{display:flex;justify-content:space-between;gap:15px;align-items:baseline;font-size:13px}
+#interactive-demo .comparison-heading span{font-size:11px;color:#537164}
+#interactive-demo .comparison-values{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+#interactive-demo .comparison-values span{display:block;font-size:12px;color:#4d6c5e}
+#interactive-demo .comparison-values strong{display:block;font-size:24px;font-weight:650;margin-top:5px;color:#235b4a}
+#interactive-demo .segmented{display:flex;gap:6px;background:white}
+#interactive-demo .segmented button{flex:1;font-size:13px;padding:10px;border:0;color:#346b57}
+#interactive-demo .segmented button.selected{background:#286a5b;color:white;box-shadow:none}
+@media(max-width:1100px){
+ #interactive-demo .inspection-guide{display:block;padding:20px}
+ #interactive-demo .guide-progress{margin-top:20px;justify-content:space-between;gap:12px}
+ #interactive-demo .finding-panel{padding:16px}
+ #interactive-demo #check-question{font-size:22px}
+ #interactive-demo .scene-stage{height:510px}
+ #interactive-demo .scene-label span{display:none}
+}
+@media(max-width:760px){
+ #interactive-demo .demo-shell{display:flex;flex-direction:column}
+ #interactive-demo .finding-panel{order:0;border-left:0;padding:18px}
+ #interactive-demo .scene-column{order:1;position:static;align-self:stretch;border-top:1px solid #dce4df}
+ #interactive-demo .scene-stage{height:360px;flex:none}
+ #interactive-demo .inspection-guide{padding:18px}
+ #interactive-demo #check-question{font-size:20px}
+ #interactive-demo .guide-progress{gap:8px}
+ #interactive-demo .guide-progress li{font-size:10px;gap:5px;max-width:104px}
+ #interactive-demo .guide-progress b{width:21px;height:21px;font-size:10px}
+ #interactive-demo .scene-toolbar{min-height:52px;flex-wrap:nowrap}
+ #interactive-demo .comparison-heading{display:block}
+ #interactive-demo .comparison-heading span{display:block;margin-top:5px}
+ #interactive-demo .comparison-values strong{font-size:22px}
+ #interactive-demo .finding-panel .evidence-image{aspect-ratio:4/3}
+ #interactive-demo .metric-picker{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ #interactive-demo .metric-picker .finding-row{display:flex;flex-direction:column;padding:10px 8px;gap:6px}
+ #interactive-demo .metric-picker small{font-size:11px;line-height:1.4;margin:0}
+ #interactive-demo .metric-picker .room-check-question{display:none}
+}
+
+.method-path>li.inspection-active>.method-stage-number{color:#216b61;text-decoration:underline;text-underline-offset:5px}
+#interactive-demo .hotspot:not(.selected){opacity:.48}
+#interactive-demo .hotspot.selected{box-shadow:0 0 0 7px #ffffff44}
