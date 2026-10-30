@@ -1,6 +1,6 @@
 {
   "source": "paper/GREP.pdf",
-  "source_sha256": "6b7e0b754dd9f74a2e48822a8dc672634cecafef64795821c505b22bde3155f1",
+  "source_sha256": "348edbf8102866976d8c47aa5134be465d774679392cae6830c91b754b5c44ab",
   "page": 9,
   "figure": "5(a)",
   "pdf": "assets/figures/grep-revision-curve.pdf",
