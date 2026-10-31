@@ -75,7 +75,7 @@ def verify_transcription(output, text):
             scope = 'open-space'
         if 'With wall layouts' in line:
             scope = 'multi-room'
-        match = re.search(r'(Overall|PhysicalV|VisualC|Human-use)\s+(.+)$', line)
+        match = re.search(r'^\s*(Overall|Physical|Visual|Human-use)\s+(\d.+)$', line)
         if match and scope:
             values = re.findall(r'\d+\.\d', match[2])
             if len(values) != 8:
@@ -84,7 +84,7 @@ def verify_transcription(output, text):
     checked = 0
     for board in output['leaderboard_views']:
         for index, model in enumerate(board['models']):
-            for metric, value in zip(('Overall', 'PhysicalV', 'VisualC', 'Human-use'), scores(model)):
+            for metric, value in zip(('Overall', 'Physical', 'Visual', 'Human-use'), scores(model)):
                 expected = sections[board['id']][metric][index]
                 if Decimal(str(value)) != Decimal(expected):
                     raise ValueError(f'Transcription mismatch: {board["id"]}/{model["key"]}/{metric}.')
