@@ -150,3 +150,5 @@
 @media(max-width:760px){.hero-strip{grid-template-columns:1fr;gap:9px;margin-top:-7px}.hero-strip a{grid-template-columns:64px minmax(0,1fr);padding:8px 10px}.hero-strip img{height:48px}.hero-strip-copy{font-size:14px}.hero-strip-tag{font-size:12px}.method-inspection .decision-branches{gap:25px}.scene-stage .loading-state{inset:auto 12px 12px;padding:14px}.loading-state #room-loading-title{font-size:14px}.loading-state #room-loading-note{font-size:12px}}
 @media(max-width:500px){.evidence-cases article>a.case-thumbnail{height:85px;margin-top:24px}.decision-branches span{font-size:13px}.method-checks .method-principles>span:not(.method-rail-label){font-size:14px}.scene-stage .loading-state{padding:11px;gap:5px}}
 .narrative-hero .hero-authors{margin:12px 0 0;font-size:15px;line-height:1.6;color:var(--muted);max-width:620px}
+.narrative-hero .hero-authors sup{font-size:.7em;line-height:0;margin-left:1px}
+.narrative-hero .hero-corresponding{display:block;margin-top:2px;font-size:13px}
