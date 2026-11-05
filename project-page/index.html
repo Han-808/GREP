@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="./assets/framework.css?v=78320c5a17cc">
   <link rel="stylesheet" href="./assets/inspection-controls.css?v=52cafac40faa">
   <link rel="stylesheet" href="./assets/home-story.css?v=846b860649f8">
-  <link rel="stylesheet" href="./assets/evidence-story.css?v=4fbe414ab896">
+  <link rel="stylesheet" href="./assets/evidence-story.css?v=68f0774cf0ca">
   <script defer src="./assets/home-leaderboard.js?v=9552f07ac773"></script>
   <script type="importmap">{"imports":{"three":"./assets/vendor/three.module.js?v=9052042d676c"}}</script>
   <script defer src="./assets/room-loader.js?v=c1fd60f27970" data-module="./assets/room-demo.js?v=f9554ee9a659"></script>
@@ -31,6 +31,7 @@
         <p class="hero-description">GREP evaluates generated 3D rooms through <strong>Physical Validity</strong>, <strong>Visual Coherence</strong>, and <strong>Human-Use</strong>—and grounds its judgments in scene evidence.</p><a class="hero-result" href="#results"><strong>87%</strong> agreement with human preferences across <b>15 scene pairs</b> <span>vs 62% for a holistic VLM ↗</span></a>
         <nav class="research-links" aria-label="Research resources">
         <a id="paper-link" href="./paper/GREP.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg><span>Paper</span></a>
+        <a id="arxiv-link" href="https://arxiv.org/abs/2611.05802" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"/></svg><span>arXiv</span></a>
 
         <a class="try-demo-link" href="#interactive-demo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 12 7-12 7z"/></svg><span>Try GREP ↓</span></a>
         <a href="./scene_liveboard.html?scope=open-space"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Examples</span></a>
@@ -144,6 +145,14 @@
 <div class="insight-grid"><article><h3>Reliance</h3><strong>40.2 → 54.5</strong><p>LayoutVLM improves GPT-4.1 over native placement.</p><a href="./paper/GREP.pdf#page=6" target="_blank" rel="noopener">FrozenAssets* · Table 2 ↗</a></article><article><h3>Conflict</h3><strong>−4.0 to −16.2</strong><p>All four tested pipelines reduce Sol’s Overall.</p><a href="./paper/GREP.pdf#page=6" target="_blank" rel="noopener">FrozenAssets* · Table 2 ↗</a></article><article><h3>Toward integration</h3><strong>88.5 vs 83.0</strong><p>With an agent harness, HY4 outperforms Sol. Stronger planning still needs adaptation to constraints.</p><a href="./paper/GREP.pdf#page=7" target="_blank" rel="noopener">Default constraints · Table 3 ↗</a></article></div><p class="study-context">FrozenAssets* excludes Visual Coherence from Overall. Integration is a research direction, not a capability demonstrated here.</p></section>
 <section class="revision story-section page-width" id="revision" data-home-section="Reports for revision" aria-labelledby="revision-title"><div class="story-heading"><h2 id="revision-title"><span class="section-number">7.</span> Bonus: reports for revision</h2><p>A diagnosis gives the generator a concrete problem to address.</p></div><div class="revision-grid"><div class="revision-copy"><strong class="revision-gain">0.585 → 0.676</strong><p>Mean score after three report-guided revisions. Score-only and no-feedback branches decline.</p><p class="study-context">Five scenes · GPT-4.1 · Separate 0–1 refinement protocol; these are not leaderboard scores divided by 100.</p><p class="study-context">Reports changed the layout in 15/15 revisions, versus 5/15 with scores alone.</p></div><figure class="revision-chart"><a href="./assets/figures/grep-revision-curve.pdf" target="_blank" rel="noopener"><img src="./assets/figures/grep-revision-curve.png?v=2" loading="lazy" alt="Original Figure 5a: report-guided revision improves the mean from 0.585 to 0.676, while scores-only and no-feedback decline."></a><figcaption><a href="./paper/GREP.pdf#page=9" target="_blank" rel="noopener">Original revision curve · Figure 5a ↗</a></figcaption></figure></div>
 <details class="paper-report-example" id="report-example"><summary>A real diagnostic record · S104 revision study</summary><div><p>From the paper’s Table 9; separate from the selected benchmark example.</p><dl><dt>Metric / check</dt><dd>Function · Relative-use geometry</dd><dt>Objects</dt><dd>Piano bench · Digital piano</dd><dt>Severity</dt><dd>Blocked</dd><dt>Reason</dt><dd>The bench is too far from the piano to serve as usable seating.</dd><dt>Measurement</dt><dd>Centre distance: 2.0 m. The bench’s seating side and the piano’s control side are each at 90° to the other object’s direction.</dd></dl><a href="./paper/GREP.pdf#page=23" target="_blank" rel="noopener">Table 9 · Full source ↗</a></div></details></section>
+    <section class="citation story-section page-width" id="citation" data-home-section="Citation" aria-labelledby="citation-title"><div class="story-heading"><h2 id="citation-title">Citation</h2><p>If you find GREP useful, please cite <a href="https://arxiv.org/abs/2611.05802" target="_blank" rel="noopener">arXiv:2611.05802</a>.</p></div>
+<pre class="bibtex"><code>@article{cao2026grep,
+  title   = {GREP: Grounding Generated Room Evaluation in Principles},
+  author  = {Cao, Mohan and Mao, Yongsen and Xiang, Chucheng and Liu, Zhongyuan and
+             Zhong, Zhihang and Wang, Haiping and Liu, Yuan},
+  journal = {arXiv preprint arXiv:2611.05802},
+  year    = {2026}
+}</code></pre></section>
   </main>
   <footer class="page-width"><a class="brand" href="./">GREP</a><p>Grounding Generated Room Evaluation in Principles</p></footer>
   <noscript><p class="noscript">Enable JavaScript to explore the interactive scene. The research overview remains available above.</p></noscript>
